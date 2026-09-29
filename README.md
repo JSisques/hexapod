@@ -36,7 +36,8 @@ The repository is split-licensed. Full texts live in [`LICENSES/`](LICENSES/).
 | --- | --- |
 | `hardware/`, `docs/` | [CC-BY-SA-4.0](LICENSES/CC-BY-SA-4.0.txt) |
 | `firmware/`, `software/`, `tools/`, root build files | [MIT](LICENSES/MIT.txt) |
-| `libs/` | Each library keeps its own upstream license |
+| `libs/BOSL2` | [BSD-2-Clause](LICENSES/BSD-2-Clause.txt) |
+| `libs/` (other) | Each library keeps its own upstream license |
 
 ## Decisions
 
