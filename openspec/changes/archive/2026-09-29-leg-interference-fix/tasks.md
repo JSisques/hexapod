@@ -86,4 +86,4 @@ Tracker branch `feat/leg-interference-fix` off `main` (base `main`). PR1 base = 
 - [x] 4.10 Edit `hardware/cad/README.md`: ASCII STL, bed gate, `check-fit`, `build/fit/`, asm line, no plate spacers, four fixtures, new "Fit check" section.
 - [x] 4.11 Edit `docs/architecture/leg-torque-budget.md`: add the "Geometry and the torque model" note (margin unchanged; real mass change about -5 to -10 g per leg covered only by calibration).
 - [x] 4.12 Verify: `make clean stl render gate-test check-fit TOOLCHAIN=docker 2>&1 | rg -c 'WARNING|ERROR'` gives 0 matches and exit 0; `check-fit: OK (12 poses`; `build/png` render outputs exist.
-- [ ] 4.13 Verify CI: PR CI runs `Gate test` then `Fit check` and passes; temporarily break geometry on a scratch branch to confirm the step fails (optional). Then open the tracker-to-main PR and confirm full CI (including `check-fit`) is green.
+- [x] 4.13 Verify CI: PR CI runs `Gate test` then `Fit check` and passes; temporarily break geometry on a scratch branch to confirm the step fails (optional). Then open the tracker-to-main PR and confirm full CI (including `check-fit`) is green.
