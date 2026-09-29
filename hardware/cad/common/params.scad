@@ -57,13 +57,11 @@ leg_joint_span  = sv(servo, "top_h") + servo_cage_depth(servo) + idler_boss_h;
 
 bed_max = 180;
 
-// Per-part checks, called from a part's main.scad: provisional echo, torque gate, bed fit.
-module leg_part_checks(name, size = undef) {
+// Per-part checks, called from a part's main.scad: provisional echo and torque gate.
+// Bed fit is checked on the exported mesh by the Makefile (bed_max), not here.
+module leg_part_checks(name) {
     echo(str("leg part: ", name));
     servo_provisional_echo(servo);
     if (check_torque) leg_torque_gate();
     else echo("torque gate skipped (check_torque=false)");
-    if (size != undef)
-        assert(max(size) <= bed_max,
-               str(name, ": part size ", size, " exceeds bed_max ", bed_max, " mm"));
 }

@@ -9,7 +9,7 @@ include <../leg-femur-plate/femur-plate.scad>
 include <../leg-tibia/tibia.scad>
 include <../leg-foot/foot.scad>
 
-leg_part_checks("asm-leg");   // no bed assert: this is not a printable part
+leg_part_checks("asm-leg");   // no bed check: this is not a printable part
 
 as_cage_depth = servo_cage_depth(servo);
 

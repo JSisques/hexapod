@@ -6,9 +6,6 @@ ft_r     = 8;                                    // tip sphere radius (d16)
 ft_od    = leg_spigot_d + tol_fit + 2 * wall;
 ft_floor = ft_r + 6;                             // socket floor height
 
-// Bounding box of the print pose: [x, y, z].
-function foot_size() = [ft_od, ft_od, ft_floor + leg_spigot_l];
-
 module foot() {
     difference() {
         hull() {
