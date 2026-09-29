@@ -46,4 +46,4 @@ A root `Makefile` MUST provide `help` as the default goal, listing all targets. 
 
 - GIVEN a placeholder target such as `stl`
 - WHEN `make stl` runs
-- THEN the output contains "not implemented" and the exit code is non-zero (1)
+- THEN the output contains "not implemented" and the exit code is non-zero (the recipe exits 1; make itself reports 2)
