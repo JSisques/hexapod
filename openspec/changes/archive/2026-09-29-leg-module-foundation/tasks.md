@@ -63,4 +63,4 @@ PR1 with ADR-0003 is ~420 (> 400), so ADR-0003 and its index row move to PR3 (de
 - [x] 4.4 `rg PROVISIONAL build/log/stl/leg-tibia.log` matches; missing-key scratch test asserts `key not found`.
 - [x] 4.5 `touch hardware/cad/common/params.scad && make stl` rebuilds leg STLs.
 - [x] 4.6 `make help` lists asm-* PNG-only text; `git check-ignore build` succeeds. (verified in PR 1 and re-verified in PR 3)
-- [ ] 4.7 Push each PR and confirm the CI run is green (gate-test, stl, render artifacts).
+- [x] 4.7 Push each PR and confirm the CI run is green (gate-test, stl, render artifacts).
