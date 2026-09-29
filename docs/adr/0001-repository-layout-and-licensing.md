@@ -33,3 +33,14 @@ The repository is greenfield and will hold mixed domains: mechanical and electri
 - Contributors must check the license table (root README and this ADR) before adding files.
 - Future CI owns artifact generation and publication.
 - REUSE lint is a possible follow-up once source files exist.
+
+## Deferred decisions
+
+These are intentionally out of scope for this ADR and will be decided in later changes:
+
+- MCU / compute platform (ESP32, RP2040/RP2350, Raspberry Pi, or a split)
+- Servo model and driver
+- Firmware and software languages and frameworks
+- Electronics tooling (e.g. KiCad)
+- Hosting and CI (GitHub Actions, repository visibility)
+- OpenSCAD library strategy (BOSL2 as a submodule)
