@@ -22,4 +22,4 @@ git add libs/BOSL2
 
 Then update the pin in this table and in ADR-0002.
 
-Each library keeps its own upstream license. Check the license shipped inside each library directory before reuse or redistribution. The BOSL2 license text is in [`LICENSES/BSD-2-Clause.txt`](../LICENSES/BSD-2-Clause.txt).
+Each library keeps its own upstream license and is not covered by this repository's own licenses (CC-BY-SA-4.0 and MIT). Check the license shipped inside each library directory before reuse or redistribution. The BOSL2 license text is in [`LICENSES/BSD-2-Clause.txt`](../LICENSES/BSD-2-Clause.txt).

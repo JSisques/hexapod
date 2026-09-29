@@ -44,10 +44,17 @@ The root `README.md` MUST replace the one-line README and MUST list every top-le
 
 ### Requirement: Deferred scope excluded
 
-The change MUST NOT add a BOSL2 submodule, `params.scad`, sample OpenSCAD parts, or CI workflows.
+The change MUST NOT add `params.scad` or real part designs. A BOSL2 submodule (`.gitmodules`), the smoke part `hardware/cad/smoke/main.scad`, the warnings-gate fixture `tools/cad/fixtures/warning.scad`, and `.github/workflows` are permitted.
+(Previously: forbade the BOSL2 submodule, `params.scad`, any OpenSCAD parts, and CI workflows.)
 
 #### Scenario: No deferred artifacts
 
 - GIVEN the tree after the change
-- WHEN searching for `.gitmodules`, `params.scad`, `*.scad`, and `.github/workflows`
-- THEN none exist
+- WHEN searching for `params.scad`
+- THEN it does not exist
+
+#### Scenario: Only smoke part exists
+
+- GIVEN the tree after the change
+- WHEN searching for `hardware/cad/**/*.scad`
+- THEN only `hardware/cad/smoke/main.scad` is found
