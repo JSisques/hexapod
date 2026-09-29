@@ -46,20 +46,20 @@ Tracker branch `feat/leg-interference-fix` off `main` (base `main`). PR1 base = 
 
 ## PR2: asm-leg refactor and check-fit (base: PR1)
 
-- [ ] 2.1 Add to `hardware/cad/common/params.scad` one-line entries: `fit_alpha = [-30, 0, 30];`, `fit_phi = [-15, 0, 20, 45];`, `fit_vol_tol = 0.1;`, `leg_lane_dy = 0;`.
-- [ ] 2.2 Create `hardware/cad/asm-leg/asm-leg.scad` (library: `asm_bodies`, `asm_colors`, `asm_link_frame`, `asm_tibia_frame`, `asm_body`, `asm_leg`). No gap and no lane offset yet.
-- [ ] 2.3 Rewrite `hardware/cad/asm-leg/main.scad` to include the library and call `leg_part_checks("asm-leg"); asm_leg(alpha, phi_nom);`.
-- [ ] 2.4 Verify: build the base PNG in a `git worktree` of `main`; `cmp` it with the refactored `build/png/asm-leg.png`; if not byte-identical, run a pixel compare and record the result.
-- [ ] 2.5 Create `hardware/cad/asm-leg/fit.scad` (pairs, `fit_diag`, offsets, sentinel).
-- [ ] 2.6 Create `tools/cad/stl-volume.awk` as in design section 1.
-- [ ] 2.7 Edit `Makefile`: `FIT_*` variables, `fit_defs`, `build/fit/%`, `build/fit-diag/%`, `build/gate-fit/%` rules, `check-fit` target, `.PHONY`, `doctor` `fit grid:` line, `-d` dep files in `build/dep/fit/`.
-- [ ] 2.8 Create `tools/cad/fixtures/fit-interference.scad` (100 mm3 overlap plus sentinel); add the fit line to `gate-test`.
-- [ ] 2.9 Verify: `make gate-test` prints 4 OK lines; swapping the fit fixture for a non-overlapping one makes it exit 1.
-- [ ] 2.10 Verify (unverified in design): contact noise. `make check-fit FIT_VOL_TOL=1e9` exits 0 and `ls build/fit/*.stl | wc -l` is 12. Record per-pair volumes for zero-thickness contacts; confirm the noise is under 0.1 mm3 (or adjust `fit_vol_tol` and report).
-- [ ] 2.11 Verify: `make check-fit` is red with per-pair lines including `tibia x coxa-bracket` at `a0_p20`; record the baseline in the PR body. Confirm the awk names pairs via the ECHO log.
-- [ ] 2.12 Verify: Manifold closed shells; sentinel-only pose yields a parseable STL; `make -n stl | rg -c 'fit'` is 0; `ls build/stl build/png | rg fit` is empty.
-- [ ] 2.13 Measure `check-fit` runtime (12 poses, serial, docker); record it. If over 5 minutes, add `-j` to the future CI step design and note in ADR.
-- [ ] 2.14 Confirm no `.github/workflows/cad.yml` change in this PR; PR CI green (gate-test proves the fit fixture).
+- [x] 2.1 Add to `hardware/cad/common/params.scad` one-line entries: `fit_alpha = [-30, 0, 30];`, `fit_phi = [-15, 0, 20, 45];`, `fit_vol_tol = 0.1;`, `leg_lane_dy = 0;`.
+- [x] 2.2 Create `hardware/cad/asm-leg/asm-leg.scad` (library: `asm_bodies`, `asm_colors`, `asm_link_frame`, `asm_tibia_frame`, `asm_body`, `asm_leg`). No gap and no lane offset yet.
+- [x] 2.3 Rewrite `hardware/cad/asm-leg/main.scad` to include the library and call `leg_part_checks("asm-leg"); asm_leg(alpha, phi_nom);`.
+- [x] 2.4 Verify: build the base PNG in a `git worktree` of `main`; `cmp` it with the refactored `build/png/asm-leg.png`; if not byte-identical, run a pixel compare and record the result.
+- [x] 2.5 Create `hardware/cad/asm-leg/fit.scad` (pairs, `fit_diag`, offsets, sentinel).
+- [x] 2.6 Create `tools/cad/stl-volume.awk` as in design section 1.
+- [x] 2.7 Edit `Makefile`: `FIT_*` variables, `fit_defs`, `build/fit/%`, `build/fit-diag/%`, `build/gate-fit/%` rules, `check-fit` target, `.PHONY`, `doctor` `fit grid:` line, `-d` dep files in `build/dep/fit/`.
+- [x] 2.8 Create `tools/cad/fixtures/fit-interference.scad` (100 mm3 overlap plus sentinel); add the fit line to `gate-test`.
+- [x] 2.9 Verify: `make gate-test` prints 4 OK lines; swapping the fit fixture for a non-overlapping one makes it exit 1.
+- [x] 2.10 Verify (unverified in design): contact noise. `make check-fit FIT_VOL_TOL=1e9` exits 0 and `ls build/fit/*.stl | wc -l` is 12. Record per-pair volumes for zero-thickness contacts; confirm the noise is under 0.1 mm3 (or adjust `fit_vol_tol` and report).
+- [x] 2.11 Verify: `make check-fit` is red with per-pair lines including `tibia x coxa-bracket` at `a0_p20`; record the baseline in the PR body. Confirm the awk names pairs via the ECHO log.
+- [x] 2.12 Verify: Manifold closed shells; sentinel-only pose yields a parseable STL; `make -n stl | rg -c 'fit'` is 0; `ls build/stl build/png | rg fit` is empty.
+- [x] 2.13 Measure `check-fit` runtime (12 poses, serial, docker); record it. If over 5 minutes, add `-j` to the future CI step design and note in ADR.
+- [x] 2.14 Confirm no `.github/workflows/cad.yml` change in this PR; PR CI green (gate-test proves the fit fixture).
 
 ## PR3: Spacer removal and pocket cut (base: PR2)
 

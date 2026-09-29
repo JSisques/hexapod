@@ -57,6 +57,13 @@ leg_joint_span  = sv(servo, "top_h") + servo_cage_depth(servo) + idler_boss_h;
 
 bed_max = 180;
 
+// Assembly fit check (make check-fit): alpha = femur pitch, phi = knee joint angle (deg); volume tolerance in mm3.
+// Keep each on one line: the Makefile reads them with awk.
+fit_alpha   = [-30, 0, 30];
+fit_phi     = [-15, 0, 20, 45];
+fit_vol_tol = 0.1;
+leg_lane_dy = 0;   // femur lane offset along the femur axis (mm)
+
 // Per-part checks, called from a part's main.scad: provisional echo and torque gate.
 // Bed fit is checked on the exported mesh by the Makefile (bed_max), not here.
 module leg_part_checks(name) {
