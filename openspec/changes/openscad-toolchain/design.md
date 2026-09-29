@@ -15,7 +15,7 @@ A root `Makefile` drives OpenSCAD through one macro, `scad`. The macro applies t
 | 5 | Stale deps | Empty pattern rule `%.scad: ;` | Post-processing `.d` files with sed/awk | When an included file is deleted, a stale `.d` file does not fail with "No rule to make target". The dependent part rebuilds instead. |
 | 6 | Gate proof | Fixture `tools/cad/fixtures/warning.scad` plus a `gate-test` target, run in CI | Documented manual check only | Every CI run proves that the gate still fires. The fixture sits outside `hardware/cad`, so it is never exported. |
 | 7 | CI triggers | Every PR plus pushes to `main`, no path filters | `paths:` filters | The proposal requires STL+PNG on every PR. The smoke build takes seconds. |
-| 8 | Action pins | Full commit SHA with a `# vX` comment | Major tags | Supply-chain hardening. |
+| 8 | Action pins | Major version tags (`@v7`) | Full commit SHA | Readability. Changed from SHA pinning at the maintainer's request; the workflow has `contents: read` and no secrets, so the risk is low. |
 | 9 | BSD-2 text | Verbatim `LICENSE` from BOSL2 at the pinned SHA | Generic SPDX template | Keeps the correct copyright holder. |
 | 10 | ADR-0001 | Left unchanged. ADR-0002 resolves its deferred items | Editing ADR-0001 | Accepted ADRs are immutable. |
 

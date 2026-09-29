@@ -1,0 +1,40 @@
+name: cad
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cad-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      # The image is pinned in the Makefile (single source of truth).
+      TOOLCHAIN: docker
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+      - name: Doctor
+        run: make doctor
+      - name: Gate test
+        run: make gate-test
+      - name: Build STL and PNG
+        run: make stl render
+      - uses: actions/upload-artifact@v7
+        with:
+          name: cad-${{ github.sha }}
+          path: |
+            build/stl
+            build/png
+          retention-days: 14
+          if-no-files-found: error

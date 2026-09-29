@@ -2,7 +2,7 @@
 
 A six-legged walking robot (18 servos, 3 DOF per leg), designed as code: parametric 3D models in OpenSCAD, plus firmware, software and documentation, all in one repository.
 
-> Status: repository scaffolding. No CAD, firmware or software yet.
+> Status: the OpenSCAD toolchain is in place (Makefile build, BOSL2, CI) with a smoke part. No real CAD parts, firmware or software yet.
 
 ## Repository map
 
@@ -15,18 +15,33 @@ A six-legged walking robot (18 servos, 3 DOF per leg), designed as code: paramet
 | `software/` | Hosted software: gait, inverse kinematics, teleoperation |
 | `docs/` | Architecture, build guide and [ADRs](docs/adr/README.md) |
 | `tools/` | Development and build scripts |
-| `libs/` | Third-party libraries (e.g. BOSL2, planned) |
+| `libs/` | Third-party libraries (BOSL2, as a git submodule) |
 | `build/` | Generated outputs (gitignored) |
 
-Generated STL and PNG files are build outputs: they are never committed and will be produced by CI.
+Generated STL and PNG files are build outputs: they are never committed; CI builds them and uploads them as artifacts.
 
 ## Quick start
 
+Clone with submodules (BOSL2 lives in `libs/BOSL2`):
+
 ```sh
-make help
+git clone --recurse-submodules https://github.com/JSisques/hexapod.git
+# already cloned without submodules:
+git submodule update --init
 ```
 
-Targets other than `help` are placeholders for now and exit non-zero.
+Prerequisites: `make`, plus either a local OpenSCAD snapshot (with the Manifold backend) or Docker. With `TOOLCHAIN=auto` (default) a local `openscad` is used when found, otherwise the pinned Docker image. CI always uses the Docker image, so `TOOLCHAIN=docker` reproduces CI locally.
+
+```sh
+make help     # list targets
+make doctor   # show the selected toolchain, version and submodule state
+make stl      # export STL models to build/stl
+make render   # render PNG previews to build/png
+```
+
+Any OpenSCAD warning or error fails the build. `make gate-test` proves the gate still fires.
+
+The `firmware`, `software` and `docs` targets are placeholders for now and exit non-zero.
 
 ## Licenses
 
@@ -41,4 +56,5 @@ The repository is split-licensed. Full texts live in [`LICENSES/`](LICENSES/).
 
 ## Decisions
 
-See [ADR-0001](docs/adr/0001-repository-layout-and-licensing.md) for the layout, STL policy and license split.
+- [ADR-0001](docs/adr/0001-repository-layout-and-licensing.md): layout, STL policy and license split.
+- [ADR-0002](docs/adr/0002-openscad-toolchain.md): OpenSCAD toolchain, pinned image, BOSL2, warnings gate and CI.

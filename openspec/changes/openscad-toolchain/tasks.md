@@ -58,7 +58,7 @@ Chain strategy: feature-branch-chain
 
 ## PR 3: CI and docs
 
-- [ ] 3.1 Resolve full commit SHAs for `actions/checkout` and `actions/upload-artifact` (`# vX` comments).
-- [ ] 3.2 Create `.github/workflows/cad.yml`: triggers, `contents: read`, concurrency, `ubuntu-24.04`, `timeout-minutes: 20`, `TOOLCHAIN: docker`, steps `doctor` → `gate-test` → `stl render` → upload (`cad-${{ github.sha }}`, 14 days, `if-no-files-found: error`).
-- [ ] 3.3 Edit `README.md`: status, `--recurse-submodules` clone, prerequisites, `make stl render doctor`, ADR-0002 link, placeholders are `firmware/software/docs` only.
-- [ ] 3.4 Verify: the PR CI run passes and artifact `cad-<sha>` holds `smoke.stl` and `smoke.png`.
+- [x] 3.1 Resolve full commit SHAs for `actions/checkout` and `actions/upload-artifact` (`# vX` comments).
+- [x] 3.2 Create `.github/workflows/cad.yml`: triggers, `contents: read`, concurrency, `ubuntu-24.04`, `timeout-minutes: 20`, `TOOLCHAIN: docker`, steps `doctor` → `gate-test` → `stl render` → upload (`cad-${{ github.sha }}`, 14 days, `if-no-files-found: error`).
+- [x] 3.3 Edit `README.md`: status, `--recurse-submodules` clone, prerequisites, `make stl render doctor`, ADR-0002 link, placeholders are `firmware/software/docs` only.
+- [x] 3.4 Verify: the PR CI run passes and artifact `cad-<sha>` holds `smoke.stl` and `smoke.png`.
