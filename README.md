@@ -13,7 +13,7 @@ A six-legged walking robot (18 servos, 3 DOF per leg), designed as code: paramet
 | `hardware/bom/` | Bill of materials |
 | `firmware/` | Microcontroller firmware |
 | `software/` | Hosted software: gait, inverse kinematics, teleoperation |
-| `docs/` | Architecture, build guide and [ADRs](docs/adr/README.md) |
+| `docs/` | Architecture, build guide, [roadmap](docs/roadmap.md) and [ADRs](docs/adr/README.md) |
 | `tools/` | Development and build scripts |
 | `libs/` | Third-party libraries (BOSL2, as a git submodule) |
 | `build/` | Generated outputs (gitignored) |
@@ -59,3 +59,6 @@ The repository is split-licensed. Full texts live in [`LICENSES/`](LICENSES/).
 - [ADR-0001](docs/adr/0001-repository-layout-and-licensing.md): layout, STL policy and license split.
 - [ADR-0002](docs/adr/0002-openscad-toolchain.md): OpenSCAD toolchain, pinned image, BOSL2, warnings gate and CI.
 - [ADR-0003](docs/adr/0003-leg-servo-abstraction-and-tiers.md): servo profile abstraction, size tiers, torque gate and `asm-*` previews.
+- [ADR-0004](docs/adr/0004-assembly-fit-and-mesh-bed-gates.md): assembly fit check (`make check-fit`) and mesh-based bed gate.
+
+See the [roadmap](docs/roadmap.md) for what comes next.
