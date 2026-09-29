@@ -1,0 +1,50 @@
+# openspec/config.yaml
+schema: spec-driven
+
+context: |
+  Project: hexapod (monorepo, early stage; only README.md exists)
+  Planned stack: OpenSCAD (3D design), firmware, software, docs (none present yet)
+  Architecture: not yet defined
+  Testing: no runner, no CI, no linter/formatter detected
+  Detected: 2026-09-29
+
+projects: []  # no project markers discovered yet; update as subprojects are added
+
+strict_tdd: false  # zero projects discovered and no workspace-level test command
+
+testing:
+  strict_tdd: false
+  reason: "No projects discovered and no explicit workspace-level test command."
+  runner: none
+  layers:
+    unit: false
+    integration: false
+    e2e: false
+  coverage: false
+  linter: none
+  type_checker: none
+  formatter: none
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    guidelines:
+      - Follow existing code patterns
+    tdd: false
+    test_command: ""
+  verify:
+    test_command: ""
+    build_command: ""
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
