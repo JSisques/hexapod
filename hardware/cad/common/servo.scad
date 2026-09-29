@@ -78,3 +78,42 @@ module servo_provisional_echo(p) {
         echo(str("servo profile ", sv(p, "name"),
                  " is PROVISIONAL: dimensions unmeasured, measure the servo before printing"));
 }
+
+// Cage geometry in the servo frame: X extent [min, max], overall width (Y) and the depth from the
+// case top face to the underside of the cage floor.
+function servo_cage_x(p) =
+    let(h = sv(p, "ear_span") / 2 + sv(p, "body_clear") + wall)
+    [_servo_cx(p) - h, _servo_cx(p) + h];
+function servo_cage_w(p) = sv(p, "body_w") + 2 * (sv(p, "body_clear") + wall);
+function servo_cage_depth(p) = sv(p, "body_h") + sv(p, "body_clear") + wall;
+
+// Printable cage around the servo body. The servo slides in through the +X end; ear bolts run along Z
+// with nuts trapped in the floor underside; an idler boss with a pivot hole and nut recess sits below
+// the floor, coaxial with the shaft. Cage top wall is at z = body_clear + wall.
+module servo_cage(p, spec = M3) {
+    c = sv(p, "body_clear"); bw = sv(p, "body_w"); bh = sv(p, "body_h");
+    cx = _servo_cx(p);
+    cl = servo_cage_x(p)[1] - servo_cage_x(p)[0];
+    zf = -servo_cage_depth(p);
+    pv = leg_mount_pivot;
+    difference() {
+        union() {
+            move([cx, 0, -bh / 2]) cuboid([cl, servo_cage_w(p), bh + 2 * (c + wall)]);
+            move([0, 0, zf + eps]) cyl(h = idler_boss_h + eps, d = fs(pv, "head_d") + 2 * wall, anchor = TOP);
+        }
+        servo_pocket(p);
+        // Slide-in slot through the +X end, full pocket width.
+        move([cx, 0, -bh / 2]) cuboid([cl / 2 + eps, bw + 2 * c, bh + 2 * c], anchor = LEFT);
+        // Hub hole through the top wall.
+        move([0, 0, c - eps]) cyl(h = wall + 2 * eps, d = bw / 2 + 2 * tol_loose, anchor = BOTTOM);
+        // Ear bolts, with nut traps on the floor underside.
+        servo_ear_holes(p, 2 * bh, spec);
+        for (sx = [-1, 1], sy = [-1, 1])
+            move([cx + sx * sv(p, "ear_hole_pitch_l") / 2, sy * sv(p, "ear_hole_pitch_w") / 2, zf])
+                nut_trap(spec, fs(spec, "nut_h") + 1);
+        // Idler pivot hole and nut recess in the boss end face.
+        move([0, 0, zf - idler_boss_h - eps])
+            cyl(h = idler_boss_h + wall + 2 * eps, d = fs(pv, "pivot"), anchor = BOTTOM);
+        move([0, 0, zf - idler_boss_h]) nut_trap(pv, fs(pv, "nylock_h"));
+    }
+}

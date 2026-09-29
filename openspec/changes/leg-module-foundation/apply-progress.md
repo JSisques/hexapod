@@ -34,3 +34,45 @@ Deferred (need parts from PR 2/3): 4.1 full, 4.3 (proved with fixture instead), 
 ### Files
 
 hardware/cad/common/{params,servo,torque,fasteners}.scad, hardware/cad/common/servos/mg996r.scad, tools/cad/fixtures/torque-infeasible.scad, Makefile.
+
+## PR 2 (branch feat/leg-module-foundation-2-parts) - DONE
+
+Tasks 2.1-2.6 complete. Phase 4 covered in PR 2: 4.2 (re-run), 4.3, 4.4, 4.5; 4.1 partially (asm-leg.png is PR 3). 4.7 still pending (push + CI).
+Authored lines: 223 (179 in the four part dirs + 44 in common/), under the 400 budget.
+
+### Work Unit Evidence
+
+| Evidence | Value |
+|---|---|
+| Focused test | `make clean stl render` (local) and `make clean stl render TOOLCHAIN=docker`: exit 0, 0 WARNING/ERROR matches; `make gate-test` local + docker: `OK` + `torque OK` |
+| Runtime harness | `-D 'leg_tier="M"'` on leg-tibia/main.scad: exit 1, `torque budget exceeded: femur static 9.51 kg.cm > allowable 6.6 ...`, no STL written; `rg PROVISIONAL build/log/stl/leg-tibia.log` matches; `sv(servo,"nope")` scratch: `key not found or duplicated: nope`; touch params.scad + `make stl` rebuilt 4 STLs |
+| Rollback boundary | `hardware/cad/leg-*/`, plus the additions in `hardware/cad/common/{servo,params}.scad` |
+
+### Part envelopes (measured from STL vertices, print pose; bed_max 180)
+
+| Part | Measured X x Y x Z (mm) | Max | Design estimate |
+|---|---|---|---|
+| leg-coxa-bracket | 86.4 x 59.8 x 57.6 | 86.4 | ~85 x 50 x 60 |
+| leg-femur-plate (A+B) | 86.0 x 72.0 x 30.8 | 86.0 | ~86 x 72 x 29 |
+| leg-tibia | 120.9 x 26.3 x 47.6 | 120.9 | ~120 x 30 x 50 |
+| leg-foot | 16.2 x 16.2 x 26.0 | 26.0 | ~20 x 20 x 26 |
+
+All match the analytic `*_size()` functions passed to `leg_part_checks`. 2.6 hard-coded dimension scan: no match outside `**/servos/**` (the design's `!common/servos/**` glob does not exclude in ripgrep; `!**/servos/**` does).
+
+### Deviations from design
+
+1. Helpers added to `common/servo.scad`: `servo_cage(p, spec)` (cage + slide-in slot + ear bolts/nut traps + idler boss), `servo_cage_x`, `servo_cage_w`, `servo_cage_depth`. Coxa bracket and tibia share it instead of duplicating cage code.
+2. `common/params.scad` gained `idler_boss_h` 4, `leg_spigot_d` 10, `leg_spigot_l` 12, `leg_joint_span` (plate-to-plate distance 50.2, so each femur plate carries 25.1 mm spacers).
+3. Servo slides into the cage from the +X end (not the -Z side), so the cage floor and idler boss can close the -Z side. Tibia idler boss is a protruding boss (same as coxa) rather than recessed, so both joints share `leg_joint_span`.
+4. BOSL2 `cyl(teardrop=true)` only limits edge rounding; it does not create a teardrop hole. `screw_clear(..., teardrop=true)` from PR 1 is therefore a plain cylinder. The foot cross hole uses BOSL2 `teardrop()` (`zrot(90) teardrop(...)`). Servo ear holes stay round (`servo_ear_holes` has no teardrop option).
+5. Coxa servo body pocket is subtracted from the bracket web (`servo_pocket` mirrored at the coxa axis) so the web clears the coxa servo and its ears.
+6. Coxa bottom-arm nut trap uses the plain M4 nut depth (3.2), not the nylock height (5.0), to keep 2.5 mm of floor.
+
+### Issues / risks
+
+- Geometry is provisional (unmeasured MG996R); no interference check with the coxa servo mounting ears beyond the pocket cut. Assembly check comes with asm-leg (PR 3).
+- Femur peak margin remains 1.02 (unchanged; femur_l 55 and 11.0 kg.cm kept).
+
+### Files
+
+hardware/cad/leg-{coxa-bracket,femur-plate,tibia,foot}/{<name>,main}.scad; modified hardware/cad/common/{servo,params}.scad.

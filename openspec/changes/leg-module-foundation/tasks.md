@@ -40,12 +40,12 @@ PR1 with ADR-0003 is ~420 (> 400), so ADR-0003 and its index row move to PR3 (de
 
 ## Phase 2: Printable Parts (PR 2)
 
-- [ ] 2.1 Create `hardware/cad/leg-coxa-bracket/{coxa-bracket,main}.scad` (C-bracket, femur cage, M4 idler).
-- [ ] 2.2 Create `hardware/cad/leg-femur-plate/{femur-plate,main}.scad` (plates A+B, spacers).
-- [ ] 2.3 Create `hardware/cad/leg-tibia/{tibia,main}.scad` (knee cage, beam, spigot).
-- [ ] 2.4 Create `hardware/cad/leg-foot/{foot,main}.scad` (TPU socket, sphere tip).
-- [ ] 2.5 Apply-time check: measure each part envelope from STL bounds; `max(size) <= bed_max` (180) and matches design estimate.
-- [ ] 2.6 Run hard-coded dimension scan: `rg -n '40\.7|19\.7|54\.5|49\.5' hardware/cad --glob '!common/servos/**'` returns nothing.
+- [x] 2.1 Create `hardware/cad/leg-coxa-bracket/{coxa-bracket,main}.scad` (C-bracket, femur cage, M4 idler).
+- [x] 2.2 Create `hardware/cad/leg-femur-plate/{femur-plate,main}.scad` (plates A+B, spacers).
+- [x] 2.3 Create `hardware/cad/leg-tibia/{tibia,main}.scad` (knee cage, beam, spigot).
+- [x] 2.4 Create `hardware/cad/leg-foot/{foot,main}.scad` (TPU socket, sphere tip).
+- [x] 2.5 Apply-time check: measure each part envelope from STL bounds; `max(size) <= bed_max` (180) and matches design estimate.
+- [x] 2.6 Run hard-coded dimension scan: `rg -n '40\.7|19\.7|54\.5|49\.5' hardware/cad --glob '!common/servos/**'` returns nothing.
 
 ## Phase 3: Assembly, Docs (PR 3)
 
@@ -57,10 +57,10 @@ PR1 with ADR-0003 is ~420 (> 400), so ADR-0003 and its index row move to PR3 (de
 
 ## Phase 4: Verification (each PR, cumulative)
 
-- [ ] 4.1 `make clean stl render`: exit 0, no `WARNING|ERROR`; `eza build/stl build/png` shows 4 leg STLs, no `asm-leg.stl`, `asm-leg.png` present (PR3).
+- [ ] 4.1 `make clean stl render`: exit 0, no `WARNING|ERROR`; `eza build/stl build/png` shows 4 leg STLs, no `asm-leg.stl`, `asm-leg.png` present (PR3). PR2 scope verified: 4 leg STLs, no asm-leg.stl; asm-leg.png pending PR3.
 - [x] 4.2 `make gate-test` prints both `OK` lines.
-- [ ] 4.3 Infeasible proof: `OPENSCADPATH=libs openscad --hardwarnings -D 'leg_tier="M"' -o $SCRATCH/x.stl hardware/cad/leg-tibia/main.scad` fails with `torque budget exceeded`.
-- [ ] 4.4 `rg PROVISIONAL build/log/stl/leg-tibia.log` matches; missing-key scratch test asserts `key not found`.
-- [ ] 4.5 `touch hardware/cad/common/params.scad && make stl` rebuilds leg STLs.
+- [x] 4.3 Infeasible proof: `OPENSCADPATH=libs openscad --hardwarnings -D 'leg_tier="M"' -o $SCRATCH/x.stl hardware/cad/leg-tibia/main.scad` fails with `torque budget exceeded`.
+- [x] 4.4 `rg PROVISIONAL build/log/stl/leg-tibia.log` matches; missing-key scratch test asserts `key not found`.
+- [x] 4.5 `touch hardware/cad/common/params.scad && make stl` rebuilds leg STLs.
 - [x] 4.6 `make help` lists asm-* PNG-only text; `git check-ignore build` succeeds. (PR 1 scope verified)
 - [ ] 4.7 Push each PR and confirm the CI run is green (gate-test, stl, render artifacts).

@@ -49,6 +49,11 @@ check_torque  = true;
 // Leg mount interface
 leg_mount_gap   = sv(servo, "body_h") + sv(servo, "top_h") + sv(servo, "horn_t") + 2 * tol_loose;
 leg_mount_pivot = M4;
+idler_boss_h    = 4.0;   // idler boss below a servo cage floor
+leg_spigot_d    = 10.0;  // tibia spigot that carries the foot
+leg_spigot_l    = 12.0;
+// Distance between the two femur plate inner faces: horn-side plate face to idler boss end face.
+leg_joint_span  = sv(servo, "top_h") + servo_cage_depth(servo) + idler_boss_h;
 
 bed_max = 180;
 
