@@ -23,7 +23,7 @@ Note: all geometry numbers below are hand-derived from source (no OpenSCAD run i
 | C. Python/trimesh | Adds a toolchain the repo lacks. |
 | D. `--summary bounding-box` | Bbox only; cannot separate slivers from real overlaps. |
 
-Design for A: refactor `asm-leg` into `asm-leg/asm-leg.scad` (one module per body with pose args) plus non-main `fit.scad`; sentinel 1 mm cube at [-1000,-1000,-1000] keeps top-level non-empty; awk sums signed tetrahedron volumes, fails above `FIT_VOL_TOL` (suggested 0.1 mm3); per-pair diagnostics only on failure. Sweep grid: `fit_alpha` [-30,0,30] x `fit_phi` [-15,0,20,45] (narrowed after design; previously [-30,0,20,45]) (yaw excluded; body out of scope). New phony `make check-fit` (outputs `build/fit/`), CI step after `gate-test`; not a prerequisite of `make stl`. Proof fixtures: `tools/cad/fixtures/fit-interference.scad` (overlapping cubes) and optional touching-cubes fixture; `gate-test` refactored with an `expect_fail` macro. Optional 0.2 mm axial gap (`leg_axial_gap = tol_fit`) on the boss/plate B face.
+Design for A: refactor `asm-leg` into `asm-leg/asm-leg.scad` (one module per body with pose args) plus non-main `fit.scad`; sentinel 1 mm cube at [-1000,-1000,-1000] keeps top-level non-empty; awk sums signed tetrahedron volumes, fails above `FIT_VOL_TOL` (suggested 0.1 mm3; 2.0 mm3 adopted after design); per-pair diagnostics only on failure. Sweep grid: `fit_alpha` [-30,0,30] x `fit_phi` [-15,0,20,45] (narrowed after design; previously [-30,0,20,45]) (yaw excluded; body out of scope). New phony `make check-fit` (outputs `build/fit/`), CI step after `gate-test`; not a prerequisite of `make stl`. Proof fixtures: `tools/cad/fixtures/fit-interference.scad` (overlapping cubes) and optional touching-cubes fixture; `gate-test` refactored with an `expect_fail` macro. Optional 0.2 mm axial gap (`leg_axial_gap = tol_fit`) on the boss/plate B face.
 
 ## 2. bed_max on the mesh
 Export with `--export-format asciistl` (probe support); awk min/max over `vertex` lines in the `build/stl/%.stl` recipe; fail with `error: <part>: STL size ... exceeds bed_max N mm` and remove the STL; `BED_MAX` parsed from `params.scad` (overridable). Remove analytic `*_size()` and their asserts. Proof fixture `tools/cad/fixtures/bed-oversize.scad`; `gate-test` expects `exceeds bed_max`.
@@ -48,10 +48,10 @@ Export with `--export-format asciistl` (probe support); awk min/max over `vertex
 4. ADR-0004 and the spec deltas above.
 
 ## Risks
-Hand-derived numbers unconfirmed; the 2D grid may reveal more collisions (B1 may still collide at alpha -30 with phi 45); ASCII STL precision and `--export-format asciistl` support on `dev.2026-01-19` unverified; 0.1 mm3 tolerance is a guess; the servo profile is provisional; deleting spacers is an unverified stiffness decision; B1 touches the body-mount interface height.
+Hand-derived numbers unconfirmed; the 2D grid may reveal more collisions (B1 may still collide at alpha -30 with phi 45); ASCII STL precision and `--export-format asciistl` support on `dev.2026-01-19` unverified; 0.1 mm3 tolerance is a guess (raised to 2.0 mm3 at PR2 apply); the servo profile is provisional; deleting spacers is an unverified stiffness decision; B1 touches the body-mount interface height.
 
 ## Product decisions
-D1 gate location (own CI step). D2 sweep set (grid above; final ranges after a scratch sweep). D3 contact allowance (0.1 mm3 + 0.2 mm gap). D4 spacers (delete). D5 (b) architecture (B1 vs B2 vs reduced range; blocks the proposal). D6 (c2). D7 remove analytic size functions. D8 ADR-0004. D9 chained PRs into a tracker.
+D1 gate location (own CI step). D2 sweep set (grid above; final ranges after a scratch sweep). D3 contact allowance (2.0 mm3 + 0.2 mm gap; previously 0.1 mm3). D4 spacers (delete). D5 (b) architecture (B1 vs B2 vs reduced range; blocks the proposal). D6 (c2). D7 remove analytic size functions. D8 ADR-0004. D9 chained PRs into a tracker.
 
 ## Ready for Proposal
 Tooling scope: yes. Geometry scope: after D5 (and preferably D2/D4).

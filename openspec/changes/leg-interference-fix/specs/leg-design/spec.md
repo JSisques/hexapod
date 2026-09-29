@@ -34,8 +34,8 @@
 
 ### Requirement: Params location and defaults
 
-`hardware/cad/common/params.scad` MUST hold global tolerances, fastener and material defaults, leg geometry (`coxa_l`, `femur_l`, `tibia_l`), the selected tier and servo, torque inputs, the leg mount interface, and `bed_max`. It MUST also hold the fit sweep lists `fit_alpha` ([-30, 0, 30]) and `fit_phi` ([-15, 0, 20, 45]), the fit volume tolerance (0.1 mm3), and MAY hold an optional `leg_axial_gap` (default 0.2 mm). The default tier MUST be XS (femur 55 mm, tibia 80 mm) and the default servo MUST be MG996R, and these MUST agree so the default build passes the torque gate.
-(Previously: no fit sweep lists, fit tolerance or axial gap in params. The `fit_phi` list was also drafted as [-30, 0, 20, 45] and narrowed to [-15, 0, 20, 45] after design.)
+`hardware/cad/common/params.scad` MUST hold global tolerances, fastener and material defaults, leg geometry (`coxa_l`, `femur_l`, `tibia_l`), the selected tier and servo, torque inputs, the leg mount interface, and `bed_max`. It MUST also hold the fit sweep lists `fit_alpha` ([-30, 0, 30]) and `fit_phi` ([-15, 0, 20, 45]), the fit volume tolerance (2.0 mm3), and MAY hold an optional `leg_axial_gap` (default 0.2 mm). The default tier MUST be XS (femur 55 mm, tibia 80 mm) and the default servo MUST be MG996R, and these MUST agree so the default build passes the torque gate.
+(Previously: no fit sweep lists, fit tolerance or axial gap in params. The `fit_phi` list was also drafted as [-30, 0, 20, 45] and narrowed to [-15, 0, 20, 45] after design. The fit volume tolerance was also drafted as 0.1 mm3 and raised to 2.0 mm3 after design, because the model has eps-level contacts of 0.3-1.1 mm3 while the smallest real interference is 17.7 mm3.)
 
 #### Scenario: Defaults agree
 
@@ -47,7 +47,7 @@
 
 - GIVEN `params.scad`
 - WHEN `fit_alpha`, `fit_phi` and the fit volume tolerance are read
-- THEN they equal [-30,0,30], [-15,0,20,45] and 0.1 mm3
+- THEN they equal [-30,0,30], [-15,0,20,45] and 2.0 mm3 (Previously: 0.1 mm3)
 
 ### Requirement: Bed size fit
 
