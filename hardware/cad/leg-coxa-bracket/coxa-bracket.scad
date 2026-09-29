@@ -10,10 +10,6 @@ cb_zmid    = leg_mount_gap / 2;
 cb_cage_x  = servo_cage_x(servo) + [coxa_l, coxa_l];
 cb_case_top = leg_mount_gap - sv(servo, "horn_t") - sv(servo, "top_h") - tol_loose;  // coxa servo case top face
 
-// Bounding box of the print pose: [x, y, z].
-function coxa_bracket_size() =
-    [cb_cage_x[1] + cb_arm_d / 2, servo_cage_depth(servo) + idler_boss_h + cb_arm_d / 2, cb_h];
-
 module coxa_bracket() {
     difference() {
         union() {

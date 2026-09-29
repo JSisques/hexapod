@@ -31,18 +31,18 @@ Tracker branch `feat/leg-interference-fix` off `main` (base `main`). PR1 base = 
 
 ## PR1: Mesh bed gate (base: tracker)
 
-- [ ] 1.1 Probe `docker run --rm --entrypoint openscad $IMG --help 2>&1 | rg -- --export-format` on the pinned `dev.2026-01-19` image. Record: flag exists (asciistl supported).
-- [ ] 1.2 Apply-time check: export a smoke part as asciistl; confirm vertices carry enough precision (at least 4 decimals) and the header is `solid`. Record in the PR body.
-- [ ] 1.3 Create `tools/cad/stl-bbox.awk` (MIT header) as in design section 1.
-- [ ] 1.4 Edit `Makefile`: `HAS_EXPORT_FORMAT` probe, `STL_FMT`, `param()`, `BED_MAX`, `bed_check`, `stl_export`, and the `build/stl/%.stl` and `build/gate/%.stl` rules; add `stl-bbox.awk` prerequisite; add `doctor` lines (`stl format:`, `bed_max:`).
-- [ ] 1.5 Edit `Makefile`: add the `expect_fail` macro; refactor `gate-test` to use it for warning and torque; add the bed line.
-- [ ] 1.6 Create `tools/cad/fixtures/bed-oversize.scad` (`cube([bed_max + 10, 10, 10])`, MIT header).
-- [ ] 1.7 Remove `*_size()` functions, their size asserts and the `size` argument of `leg_part_checks` under `hardware/cad/common/`, `hardware/cad/leg-coxa-bracket/`, `hardware/cad/leg-femur-plate/`, `hardware/cad/leg-tibia/`, `hardware/cad/leg-foot/`, `hardware/cad/asm-leg/`.
-- [ ] 1.8 Create `docs/adr/0004-assembly-fit-and-mesh-bed-gates.md` skeleton (Status Proposed; Context, Decision items 1-7, Amendments, Alternatives, Consequences headings).
-- [ ] 1.9 Verify (shell): `make clean stl TOOLCHAIN=docker` exits 0, `head -c5 build/stl/smoke.stl` is `solid`, printed sizes equal the verify-report sizes (86.4x59.8x57.6, 86.0x72.0x30.8, 120.9x26.3x47.6, 16.2x16.2x26.0).
-- [ ] 1.10 Verify: `make stl BED_MAX=50; echo $?` non-zero with `exceeds bed_max`; `test ! -f build/stl/leg-tibia.stl`; `rg -n '_size\(' hardware/cad` has no match.
-- [ ] 1.11 Verify: `make gate-test` prints 3 OK lines; swap the bed fixture for `cube(1)` and confirm exit 1 with "gate did not fire"; restore.
-- [ ] 1.12 Verify: apply-time Manifold closed-shell check for the asciistl output (no warnings in `make stl`); PR CI green.
+- [x] 1.1 Probe `docker run --rm --entrypoint openscad $IMG --help 2>&1 | rg -- --export-format` on the pinned `dev.2026-01-19` image. Record: flag exists (asciistl supported).
+- [x] 1.2 Apply-time check: export a smoke part as asciistl; confirm vertices carry enough precision (at least 4 decimals) and the header is `solid`. Record in the PR body.
+- [x] 1.3 Create `tools/cad/stl-bbox.awk` (MIT header) as in design section 1.
+- [x] 1.4 Edit `Makefile`: `HAS_EXPORT_FORMAT` probe, `STL_FMT`, `param()`, `BED_MAX`, `bed_check`, `stl_export`, and the `build/stl/%.stl` and `build/gate/%.stl` rules; add `stl-bbox.awk` prerequisite; add `doctor` lines (`stl format:`, `bed_max:`).
+- [x] 1.5 Edit `Makefile`: add the `expect_fail` macro; refactor `gate-test` to use it for warning and torque; add the bed line.
+- [x] 1.6 Create `tools/cad/fixtures/bed-oversize.scad` (`cube([bed_max + 10, 10, 10])`, MIT header).
+- [x] 1.7 Remove `*_size()` functions, their size asserts and the `size` argument of `leg_part_checks` under `hardware/cad/common/`, `hardware/cad/leg-coxa-bracket/`, `hardware/cad/leg-femur-plate/`, `hardware/cad/leg-tibia/`, `hardware/cad/leg-foot/`, `hardware/cad/asm-leg/`.
+- [x] 1.8 Create `docs/adr/0004-assembly-fit-and-mesh-bed-gates.md` skeleton (Status Proposed; Context, Decision items 1-7, Amendments, Alternatives, Consequences headings).
+- [x] 1.9 Verify (shell): `make clean stl TOOLCHAIN=docker` exits 0, `head -c5 build/stl/smoke.stl` is `solid`, printed sizes equal the verify-report sizes (86.4x59.8x57.6, 86.0x72.0x30.8, 120.9x26.3x47.6, 16.2x16.2x26.0).
+- [x] 1.10 Verify: `make stl BED_MAX=50; echo $?` non-zero with `exceeds bed_max`; `test ! -f build/stl/leg-tibia.stl`; `rg -n '_size\(' hardware/cad` has no match.
+- [x] 1.11 Verify: `make gate-test` prints 3 OK lines; swap the bed fixture for `cube(1)` and confirm exit 1 with "gate did not fire"; restore.
+- [x] 1.12 Verify: apply-time Manifold closed-shell check for the asciistl output (no warnings in `make stl`); PR CI green.
 
 ## PR2: asm-leg refactor and check-fit (base: PR1)
 

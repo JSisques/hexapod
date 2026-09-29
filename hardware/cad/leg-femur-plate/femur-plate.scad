@@ -11,10 +11,6 @@ fp_spacer_d = fs(M3, "d") + 2 * wall;
 fp_spacer_y = 8;
 fp_gap      = 10;                   // print-pose distance between A and B
 
-// Bounding box of the print pose: [x, y, z].
-function femur_plate_size() =
-    [femur_l + fp_d, 2 * fp_d + fp_gap, max(fp_a_t, fp_b_t) + fp_spacer_h];
-
 module _fp_blank(t) {
     hull() for (x = [0, femur_l]) move([x, 0, -t]) cyl(h = t, d = fp_d, anchor = BOTTOM);
     for (y = [-fp_spacer_y, fp_spacer_y])
