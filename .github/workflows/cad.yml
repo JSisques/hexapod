@@ -28,6 +28,8 @@ jobs:
         run: make doctor
       - name: Gate test
         run: make gate-test
+      - name: Fit check
+        run: make check-fit
       - name: Build STL and PNG
         run: make stl render
       - uses: actions/upload-artifact@v7

@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help stl render firmware software docs clean doctor gate-test preflight
+.PHONY: help stl render firmware software docs clean doctor gate-test check-fit preflight
 .DELETE_ON_ERROR:
 .SUFFIXES:
 
@@ -32,11 +32,33 @@ export OPENSCADPATH := $(CURDIR)/libs
 ifeq ($(TC),docker)
 OPENSCAD_CMD = docker run --rm -u $$(id -u):$$(id -g) -e HOME=/tmp -e OPENSCADPATH=$(CURDIR)/libs -v "$(CURDIR):$(CURDIR)" -w "$(CURDIR)" --entrypoint openscad $(OPENSCAD_IMAGE)
 HAS_BACKEND = yes
+HAS_EXPORT_FORMAT = yes
 else
 OPENSCAD_CMD = "$(OPENSCAD)"
 HAS_BACKEND = $(shell "$(OPENSCAD)" --help 2>&1 | grep -q -- --backend && echo yes)
+HAS_EXPORT_FORMAT = $(shell "$(OPENSCAD)" --help 2>&1 | grep -q -- --export-format && echo yes)
 endif
 BACKEND_FLAG = $(if $(HAS_BACKEND),--backend=$(BACKEND))
+# ASCII STL so the awk gates can read vertices; binaries without the flag already write ASCII.
+STL_FMT = $(if $(HAS_EXPORT_FORMAT),--export-format asciistl)
+
+PARAMS := hardware/cad/common/params.scad
+# Value of a one-line "name = value;" in params.scad; list brackets and commas become spaces.
+param = $(strip $(shell LC_ALL=C awk '$$1 == "$(1)" && $$2 == "=" { sub(/^[^=]*=/, ""); sub(/;.*/, ""); gsub(/[][,]/, " "); print; exit }' $(PARAMS)))
+ifeq ($(origin BED_MAX),undefined)
+BED_MAX := $(call param,bed_max)
+endif
+ifeq ($(origin FIT_VOL_TOL),undefined)
+FIT_VOL_TOL := $(call param,fit_vol_tol)
+endif
+FIT_ALPHA := $(call param,fit_alpha)
+FIT_PHI   := $(call param,fit_phi)
+FIT_POSES := $(foreach a,$(FIT_ALPHA),$(foreach p,$(FIT_PHI),a$(a)_p$(p)))
+FIT_STLS  := $(FIT_POSES:%=build/fit/%.stl)
+FIT_SRC   := hardware/cad/asm-leg/fit.scad
+FIT_VOL    = LC_ALL=C awk -v tol='$(FIT_VOL_TOL)' -f tools/cad/stl-volume.awk
+# Pose stem a-30_p45 -> -D fit_a=-30 -D fit_p=45
+fit_defs = -D fit_a=$(patsubst a%,%,$(word 1,$(subst _, ,$(1)))) -D fit_p=$(patsubst p%,%,$(word 2,$(subst _, ,$(1))))
 
 SRCS := $(wildcard hardware/cad/*/main.scad)
 PARTS := $(patsubst hardware/cad/%/main.scad,%,$(SRCS))
@@ -53,15 +75,27 @@ scad = mkdir -p $(@D) build/dep/$(4) build/log/$(4); log=build/log/$(4)/$*.log; 
   cat "$$log" >&2; \
   if [ $$st -ne 0 ] || grep -Eq 'WARNING|ERROR' "$$log"; then rm -f $(1); echo "error: OpenSCAD warnings/errors in $(2)" >&2; exit 1; fi
 
+# Mesh bed check: $(1) ASCII STL, $(2) name. The STL is removed on failure.
+bed_check  = LC_ALL=C awk -v max='$(BED_MAX)' -v name='$(2)' -f tools/cad/stl-bbox.awk $(1) || { rm -f $(1); exit 1; }
+stl_export = $(call scad,$(1),$(2),$(STL_FMT),$(3)); $(call bed_check,$(1),$*)
+
+# Build $(1) and pass only if it fails with output matching the ERE $(2); $(3) is the label.
+expect_fail = rm -f $(1); out=$$($(MAKE) --no-print-directory $(1) 2>&1); st=$$?; \
+  if [ $$st -ne 0 ] && printf '%s\n' "$$out" | grep -Eq '$(2)'; then echo "gate-test: $(3) OK"; \
+  else printf '%s\n' "$$out" >&2; echo "gate-test: FAILED ($(3) gate did not fire)" >&2; exit 1; fi
+
 help: ## List available targets
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-stl: $(STLS) ## Export STL models to build/stl (asm-* parts are PNG-only)
+stl: $(STLS) ## Export ASCII STL models to build/stl and check them against bed_max (asm-* parts are PNG-only)
 render: $(PNGS) ## Render PNG previews to build/png
 
-build/stl/%.stl: hardware/cad/%/main.scad | preflight ; @$(call scad,$@,$<,,stl)
+build/stl/%.stl: hardware/cad/%/main.scad tools/cad/stl-bbox.awk | preflight ; @$(call stl_export,$@,$<,stl)
 build/png/%.png: hardware/cad/%/main.scad | preflight ; @$(call scad,$@,$<,--imgsize=$(IMGSIZE) --autocenter --viewall --render,png)
-build/gate/%.stl: tools/cad/fixtures/%.scad | preflight ; @$(call scad,$@,$<,,gate)
+build/gate/%.stl: tools/cad/fixtures/%.scad tools/cad/stl-bbox.awk | preflight ; @$(call stl_export,$@,$<,gate)
+build/gate-fit/%.stl: tools/cad/fixtures/%.scad tools/cad/stl-volume.awk | preflight ; @$(call scad,$@,$<,$(STL_FMT),gate-fit); $(FIT_VOL) -v name='$*' $@
+build/fit/%.stl: $(FIT_SRC) | preflight ; @$(call scad,$@,$<,$(STL_FMT) $(call fit_defs,$*),fit)
+build/fit-diag/%.stl: $(FIT_SRC) | preflight ; @$(call scad,$@,$<,$(STL_FMT) $(call fit_defs,$*) -D fit_diag=true,fit-diag)
 
 # Deleted includes listed in stale .d files must not break the build.
 %.scad: ;
@@ -88,17 +122,28 @@ else
 	@echo "version:    $$($(OPENSCAD_CMD) --version 2>&1 | tail -1)"
 endif
 	@echo "backend:    $(if $(HAS_BACKEND),$(BACKEND) (supported),not supported)"
+	@echo "stl format: $(if $(HAS_EXPORT_FORMAT),asciistl,default)"
+	@echo "bed_max:    $(BED_MAX) mm"
+	@echo "fit grid:   alpha $(FIT_ALPHA) x phi $(FIT_PHI)"
 	@echo "BOSL2:      $$(git submodule status libs/BOSL2 2>&1)"
 	@if command -v docker >/dev/null 2>&1; then echo "docker:     available"; else echo "docker:     not found"; fi
 
-gate-test: ## Prove the warnings and torque gates fail on their fixtures
-	@rm -f build/gate/warning.stl build/gate/torque-infeasible.stl; \
-	out=$$($(MAKE) build/gate/warning.stl 2>&1); st=$$?; \
-	if [ $$st -ne 0 ] && printf '%s\n' "$$out" | grep -q WARNING; then echo "gate-test: OK"; \
-	else printf '%s\n' "$$out" >&2; echo "gate-test: FAILED (gate did not fire)" >&2; exit 1; fi; \
-	out=$$($(MAKE) build/gate/torque-infeasible.stl 2>&1); st=$$?; \
-	if [ $$st -ne 0 ] && printf '%s\n' "$$out" | grep -q 'torque budget exceeded'; then echo "gate-test: torque OK"; \
-	else printf '%s\n' "$$out" >&2; echo "gate-test: FAILED (torque gate did not fire)" >&2; exit 1; fi
+gate-test: ## Prove the warnings, torque, bed and fit gates fail on their fixtures
+	@$(call expect_fail,build/gate/warning.stl,WARNING,warnings)
+	@$(call expect_fail,build/gate/torque-infeasible.stl,torque budget exceeded,torque)
+	@$(call expect_fail,build/gate/bed-oversize.stl,exceeds bed_max,bed)
+	@$(call expect_fail,build/gate-fit/fit-interference.stl,interference volume,fit)
+
+check-fit: $(FIT_STLS) ## Check the leg assembly for interference over the fit pose grid
+	@[ -n "$(FIT_POSES)" ] || { echo "error: check-fit: fit_alpha/fit_phi not found in $(PARAMS)" >&2; exit 1; }
+	@fail=; for p in $(FIT_POSES); do \
+	  $(FIT_VOL) -v name="$$p" build/fit/$$p.stl && continue; \
+	  fail="$$fail $$p"; \
+	  $(MAKE) --no-print-directory build/fit-diag/$$p.stl && \
+	    $(FIT_VOL) -v name="$$p" -v pairs=build/log/fit-diag/$$p.log build/fit-diag/$$p.stl; \
+	done; \
+	if [ -n "$$fail" ]; then echo "error: check-fit: interference in poses:$$fail" >&2; exit 1; fi; \
+	echo "check-fit: OK ($(words $(FIT_POSES)) poses, tolerance $(FIT_VOL_TOL) mm3)"
 
 firmware: ## Build firmware (placeholder)
 	$(NOT_IMPLEMENTED)

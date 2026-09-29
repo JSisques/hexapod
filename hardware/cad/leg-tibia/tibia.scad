@@ -9,10 +9,6 @@ tb_h1    = 14;      // beam height and width at the spigot end
 tb_x_end = -(tibia_l - leg_spigot_l);
 tb_zax   = tb_ztop - tb_h1 / 2;
 
-// Bounding box of the print pose: [x, y, z].
-function tibia_size() =
-    [servo_cage_x(servo)[1] + tibia_l, servo_cage_w(servo), tb_ztop + servo_cage_depth(servo) + idler_boss_h];
-
 module tibia() {
     x0 = servo_cage_x(servo)[0];
     difference() {
