@@ -96,7 +96,7 @@ CI: checkout(submodules) → make doctor → make gate-test → make stl render 
 | Help | `make; make help` | exit 0; lists `stl render clean doctor gate-test` |
 | Build | `make clean && make stl render && test -s build/stl/smoke.stl && test -s build/png/smoke.png` | exit 0 |
 | Dep target | `rg -q '^build/stl/smoke.stl:' build/dep/stl/smoke.d && rg -q 'BOSL2/std.scad' build/dep/stl/smoke.d` | exit 0 |
-| Incremental | second `make stl` reports "Nothing to be done". Running `touch hardware/cad/smoke/main.scad` then `make stl` rebuilds | as stated |
+| Incremental | second `make stl` is silent, runs no OpenSCAD, and leaves the STL mtime unchanged (the order-only phony `preflight` always runs, so make prints no "Nothing to be done"). Running `touch hardware/cad/smoke/main.scad` then `make stl` rebuilds | as stated |
 | Gate | `make gate-test` | prints `gate-test: OK` |
 | Submodule guard | `git submodule deinit -f libs/BOSL2; make stl` | non-zero, hint printed; restore with `git submodule update --init` |
 | Docker | `make clean stl render TOOLCHAIN=docker && test -O build/stl/smoke.stl` | exit 0 |
@@ -126,6 +126,15 @@ The work is delivered as three chained PRs, each under 400 lines. BOSL2 is a git
 3. `cad.yml` and the README usage docs (~90 lines).
 
 Rollback reverts the PRs in reverse order.
+
+## Apply-time Findings (PR 2)
+
+- Image pin is `openscad/openscad:dev.2026-01-19@sha256:0af06bc2aa7a45d18b01a23cfb9dae6dddcd9542611e7be50edea6beb3b52fa7`. Newer tags `dev.2026-09-23` and `dev.2026-09-28` fail PNG export ("Can't create OffscreenView: Unable to initialize GLAD"); `dev.2026-01-19` renders with no WARNING.
+- In-image binary is `/usr/local/bin/openscad`; `--entrypoint openscad` works.
+- The `.d` first line is `build/stl/smoke.stl: \` as designed.
+- Make 3.81 prints nothing on an up-to-date `make stl` (see Testing Strategy).
+- The gate macro also runs `rm -f $(1)` on failure, so a failed build leaves no output.
+- An internal `TC` variable holds the resolved toolchain, so `TOOLCHAIN=` on the command line is never overridden.
 
 ## Open Questions
 

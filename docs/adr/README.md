@@ -18,5 +18,6 @@ Significant decisions are recorded here as ADRs in the Nygard format, extended w
 | ADR | Title | Status | Date |
 |---|---|---|---|
 | [0001](0001-repository-layout-and-licensing.md) | Repository layout and licensing | Accepted | 2026-09-29 |
+| [0002](0002-openscad-toolchain.md) | OpenSCAD toolchain | Accepted | 2026-09-29 |
 
 License: CC-BY-SA-4.0 — see [LICENSES/CC-BY-SA-4.0.txt](../../LICENSES/CC-BY-SA-4.0.txt)

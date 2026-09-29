@@ -9,4 +9,17 @@
 - 1.5 README.md: `libs/BOSL2` BSD-2-Clause license row.
 - 1.6 Verified: `git submodule status libs/BOSL2` shows the pinned SHA; license file exists.
 
-Not committed (per instructions). Remaining: PR 2 (2.1-2.12), PR 3 (3.1-3.4).
+## PR 2 (branch feat/openscad-toolchain-2-build): tasks 2.1-2.12 done
+
+- 2.1 Image pinned: `openscad/openscad:dev.2026-01-19@sha256:0af06bc2aa7a45d18b01a23cfb9dae6dddcd9542611e7be50edea6beb3b52fa7` (index digest; amd64, arm64, riscv64). dev.2026-09-28 and dev.2026-09-23 rejected: PNG fails with GLAD error.
+- 2.2 In-image binary `/usr/local/bin/openscad`; `--entrypoint openscad` works.
+- 2.3-2.5 smoke part, warning fixture, Makefile written per design.
+- 2.6 BOSL2 smoke build: no WARNING/ERROR (local 2026.09.29 and Docker 2026.01.19).
+- 2.7 EGL PNG in Docker (dev.2026-01-19): no WARNING.
+- 2.8 `build/dep/stl/smoke.d` first line is `build/stl/smoke.stl: \`.
+- 2.9 ADR-0002 + index row. 2.10 hardware/cad/README.md. 2.11 openspec/config.yaml.
+- 2.12 all shell checks run (see return summary). Local openscad: 2026.09.29.
+
+Deviations: image tag (above); no "Nothing to be done" message (preflight always runs); gate macro removes output on failure; internal `TC` variable.
+
+Not committed (per instructions). Remaining: PR 3 (3.1-3.4).
