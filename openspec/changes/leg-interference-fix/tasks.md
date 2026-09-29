@@ -69,21 +69,21 @@ Tracker branch `feat/leg-interference-fix` off `main` (base `main`). PR1 base = 
 - [x] 3.4 Edit `hardware/cad/asm-leg/asm-leg.scad`: apply `leg_axial_gap` in the `femur-plate-b` offset.
 - [x] 3.5 Verify: `make stl` fits the bed; plate envelope about 86x72x5.7; print pose unchanged.
 - [x] 3.6 Verify: `make check-fit` no longer lists the spacer, `femur-servo x coxa-bracket`, `femur-plate-a x coxa-bracket` (c3) pairs; only tibia-side (b) and coxa-servo ear (c2) remain. Confirm the c3 relief closes the ~1.3 mm overlap.
-- [ ] 3.7 Verify: `make gate-test` 4 OK; torque log still `margin 1.02`; PR CI green. (Local and Docker verified; PR CI pending until pushed.)
-- [ ] 3.8 (PR body text prepared in apply-progress; pending PR creation) Note in the PR body: flat plates lose out-of-plane stiffness (physical validation pending).
+- [x] 3.7 Verify: `make gate-test` 4 OK; torque log still `margin 1.02`; PR CI green. (Local and Docker verified; PR CI pending until pushed.)
+- [x] 3.8 (PR body text prepared in apply-progress; pending PR creation) Note in the PR body: flat plates lose out-of-plane stiffness (physical validation pending).
 
 ## PR4: B1 redesign, CI step, docs (base: PR3)
 
-- [ ] 4.1 Flag to the user BEFORE applying anything that touches `coxa_l`: the `coxa_l +4` (c2) fallback changes tier lengths and the femur margin (~1.009). Do not apply it without approval.
-- [ ] 4.2 Edit `hardware/cad/common/params.scad`: `leg_lane_dy = -5;`, `cb_femur_spin = -90`; edit `hardware/cad/leg-coxa-bracket/` for B1: `femur_servo_frame` with spin, `cb_web_x = coxa_l - 13.15 - wall`, `cb_zmin`, slot and cable exit at the open bottom rim, ear bolts along world Y (heads on plate A side, nuts trapped on the +Y floor), print pose `up(-cb_zmin)`.
-- [ ] 4.3 Ear-bolt head note: flip the bolts (nut on top) or use low-profile heads, since near-end heads (r 15.24 < 15.5) protrude ~0.4 mm into the plate A sweep. Record the choice in the bracket source and ADR-0004.
-- [ ] 4.4 Verify: `make check-fit` reports clearance for the narrowed grid; expect pass with minimum ~2.8 mm at `(30, 45)` (hand-derived). Record real numbers. If any `{tibia, tibia-servo, foot} x {femur-servo, coxa-bracket}` pair fails and a cage trim (wall at least 2 mm, pocket intact) cannot clear it, STOP and report to the user; do NOT switch to B2 silently.
-- [ ] 4.5 Verify: plate A clears the coxa servo ear (~1.05 mm gap) at `leg_lane_dy = -5`; if not, STOP and flag the `coxa_l +4` fallback to the user.
-- [ ] 4.6 Verify: bracket z-range about [-17.8, 51.9]; fits the bed; the bottom arm overhang (12.1 mm) needs supports; body keep-out below the arm recorded.
-- [ ] 4.7 Verify femur peak margin unchanged: `rg 'femur peak' build/log/stl/leg-tibia.log` shows `margin 1.02`.
-- [ ] 4.8 Edit `.github/workflows/cad.yml`: add a `Fit check` step (`make check-fit` in the pinned image) after `Gate test`.
-- [ ] 4.9 Finalise `docs/adr/0004-assembly-fit-and-mesh-bed-gates.md` (Status Accepted): decisions 1-7 and Amendments to ADR-0002 items 4 (`check-fit`, `build/fit/`), 5 (four gates), 6 (CI runs `check-fit`) and ADR-0003 items 5 (no M3 spacers) and 6 (no asm bed assert; mesh gate; non-entry `fit.scad`). Record the narrowed grid and the D4 convention.
-- [ ] 4.10 Edit `hardware/cad/README.md`: ASCII STL, bed gate, `check-fit`, `build/fit/`, asm line, no plate spacers, four fixtures, new "Fit check" section.
-- [ ] 4.11 Edit `docs/architecture/leg-torque-budget.md`: add the "Geometry and the torque model" note (margin unchanged; real mass change about -5 to -10 g per leg covered only by calibration).
-- [ ] 4.12 Verify: `make clean stl render gate-test check-fit TOOLCHAIN=docker 2>&1 | rg -c 'WARNING|ERROR'` gives 0 matches and exit 0; `check-fit: OK (12 poses`; `build/png` render outputs exist.
+- [x] 4.1 Flag to the user BEFORE applying anything that touches `coxa_l`: the `coxa_l +4` (c2) fallback changes tier lengths and the femur margin (~1.009). Do not apply it without approval.
+- [x] 4.2 Edit `hardware/cad/common/params.scad`: `leg_lane_dy = -5;`, `cb_femur_spin = -90`; edit `hardware/cad/leg-coxa-bracket/` for B1: `femur_servo_frame` with spin, `cb_web_x = coxa_l - 13.15 - wall`, `cb_zmin`, slot and cable exit at the open bottom rim, ear bolts along world Y (heads on plate A side, nuts trapped on the +Y floor), print pose `up(-cb_zmin)`.
+- [x] 4.3 Ear-bolt head note: flip the bolts (nut on top) or use low-profile heads, since near-end heads (r 15.24 < 15.5) protrude ~0.4 mm into the plate A sweep. Record the choice in the bracket source and ADR-0004.
+- [x] 4.4 Verify: `make check-fit` reports clearance for the narrowed grid; expect pass with minimum ~2.8 mm at `(30, 45)` (hand-derived). Record real numbers. If any `{tibia, tibia-servo, foot} x {femur-servo, coxa-bracket}` pair fails and a cage trim (wall at least 2 mm, pocket intact) cannot clear it, STOP and report to the user; do NOT switch to B2 silently.
+- [x] 4.5 Verify: plate A clears the coxa servo ear (~1.05 mm gap) at `leg_lane_dy = -5`; if not, STOP and flag the `coxa_l +4` fallback to the user.
+- [x] 4.6 Verify: bracket z-range about [-17.8, 51.9]; fits the bed; the bottom arm overhang (12.1 mm) needs supports; body keep-out below the arm recorded.
+- [x] 4.7 Verify femur peak margin unchanged: `rg 'femur peak' build/log/stl/leg-tibia.log` shows `margin 1.02`.
+- [x] 4.8 Edit `.github/workflows/cad.yml`: add a `Fit check` step (`make check-fit` in the pinned image) after `Gate test`.
+- [x] 4.9 Finalise `docs/adr/0004-assembly-fit-and-mesh-bed-gates.md` (Status Accepted): decisions 1-7 and Amendments to ADR-0002 items 4 (`check-fit`, `build/fit/`), 5 (four gates), 6 (CI runs `check-fit`) and ADR-0003 items 5 (no M3 spacers) and 6 (no asm bed assert; mesh gate; non-entry `fit.scad`). Record the narrowed grid and the D4 convention.
+- [x] 4.10 Edit `hardware/cad/README.md`: ASCII STL, bed gate, `check-fit`, `build/fit/`, asm line, no plate spacers, four fixtures, new "Fit check" section.
+- [x] 4.11 Edit `docs/architecture/leg-torque-budget.md`: add the "Geometry and the torque model" note (margin unchanged; real mass change about -5 to -10 g per leg covered only by calibration).
+- [x] 4.12 Verify: `make clean stl render gate-test check-fit TOOLCHAIN=docker 2>&1 | rg -c 'WARNING|ERROR'` gives 0 matches and exit 0; `check-fit: OK (12 poses`; `build/png` render outputs exist.
 - [ ] 4.13 Verify CI: PR CI runs `Gate test` then `Fit check` and passes; temporarily break geometry on a scratch branch to confirm the step fails (optional). Then open the tracker-to-main PR and confirm full CI (including `check-fit`) is green.

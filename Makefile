@@ -132,7 +132,7 @@ gate-test: ## Prove the warnings, torque, bed and fit gates fail on their fixtur
 	@$(call expect_fail,build/gate/warning.stl,WARNING,warnings)
 	@$(call expect_fail,build/gate/torque-infeasible.stl,torque budget exceeded,torque)
 	@$(call expect_fail,build/gate/bed-oversize.stl,exceeds bed_max,bed)
-	@$(call expect_fail,build/gate-fit/fit-interference.stl,interference,fit)
+	@$(call expect_fail,build/gate-fit/fit-interference.stl,interference volume,fit)
 
 check-fit: $(FIT_STLS) ## Check the leg assembly for interference over the fit pose grid
 	@[ -n "$(FIT_POSES)" ] || { echo "error: check-fit: fit_alpha/fit_phi not found in $(PARAMS)" >&2; exit 1; }

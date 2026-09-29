@@ -72,3 +72,24 @@ Flat plates lose out-of-plane stiffness (spacers and bolts removed; the servo ca
 - `leg_plate_a_relief()` is defined in `femur-plate.scad` (per task) but is a cutter for the bracket, so `coxa-bracket.scad` now includes `femur-plate.scad`.
 - `femur_servo_frame()` is added to `coxa-bracket.scad` (design ownership) and `asm-leg.scad` uses it instead of its own `asm_femur_servo_frame`; frame includes `leg_lane_dy` (0 now).
 - Tolerance change 0.1 -> 2.0 mm3 (user decision).
+
+## PR4: B1 redesign, CI step, docs (tasks 4.1-4.12 done; 4.13 pending orchestrator)
+
+Store: openspec. Branch `feat/leg-interference-fix-4-b1`. Uncommitted.
+
+- 4.1: no change to `coxa_l`, `femur_l`, `tibia_l`, the 11.0 kg.cm figure or tier XS.
+- 4.2/4.3: `params.scad` (`leg_lane_dy = -5`, `cb_femur_spin = -90`); `coxa-bracket.scad` (spin in `femur_servo_frame`, `cb_cage_hw`, `cb_web_x = coxa_l - 13.15 - wall = 13.85`, `cb_zmin = -17.8`, web spanning `cb_zmin` to the top arm, print pose `up(-cb_zmin)`, ear-bolt head note). The slide-in slot, cable exit, nut traps on the +Y floor and ear bolts along world Y follow from the spin of `servo_cage` (no cage code change: servo +X maps to world -Z, servo Z stays world Y).
+- 4.4/4.5: `make check-fit` local: `check-fit: OK (12 poses, tolerance 2.0 mm3)`; every pose totals 0.501 mm3 (`tibia x foot` eps contact). `coxa-servo x femur-plate-a` (17.7 mm3 baseline) is gone, so `leg_lane_dy = -5` clears (c2); no `coxa_l` fallback. No cage trim needed, B2 not needed. (Per-pair clearance distances are not measured by the tool, only overlap volume.)
+- 4.6: `cb_zmin` -17.8 and top 51.9 (OpenSCAD echo); print-pose bracket STL 58.65 x 54.80 x 69.70, under `bed_max`; supports needed for the 12.1 mm bottom-arm overhang; keep-out in README and ADR-0004.
+- 4.7: `femur peak 8.66 / 8.8 kg.cm, margin 1.02`.
+- 4.8: `.github/workflows/cad.yml` `Fit check` step after `Gate test` (`make check-fit`, job env `TOOLCHAIN: docker`).
+- 4.9-4.11: ADR-0004 Accepted; README hardware/cad (ASCII STL, bed gate, fit check section, mount interface, no spacers, four gates); torque note.
+- 4.12: `make clean stl render gate-test check-fit TOOLCHAIN=docker`: exit 0, 0 WARNING/ERROR, `gate-test: warnings/torque/bed/fit OK`, `check-fit: OK (12 poses, tolerance 2.0 mm3)`, 6 PNGs; ran in 2:18. Local check-fit ran in 1:45 (2026.09.29).
+- 4.13 pending (orchestrator): PR CI run with `Fit check`, tracker-to-main PR and its full CI.
+
+### Work Unit Evidence (PR4)
+| Evidence | Value |
+|---|---|
+| Focused test command | `make check-fit` local and `TOOLCHAIN=docker`: OK, 12 poses; `make gate-test` 4 OK |
+| Runtime harness | `make clean stl render gate-test check-fit TOOLCHAIN=docker` exit 0, 0 warnings |
+| Rollback boundary | `coxa-bracket.scad`, two params lines, `cad.yml`, ADR-0004, README, torque note |
