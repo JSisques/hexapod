@@ -35,21 +35,21 @@ Chain strategy: feature-branch-chain
 
 ## PR 2: Build system
 
-- [ ] 2.1 Apply-time: pick `dev.<date>` tag and its multi-arch index digest (`docker buildx imagetools inspect`); record it.
-- [ ] 2.2 Apply-time: confirm the binary name/path in the image works with `--entrypoint openscad`.
-- [ ] 2.3 Create `hardware/cad/smoke/main.scad` (SPDX header, BOSL2 include, `cuboid`).
-- [ ] 2.4 Create `tools/cad/fixtures/warning.scad` (`cube(size = undefined_on_purpose);`).
-- [ ] 2.5 Edit `Makefile`: variables, detection, `scad` macro, pattern rules, `preflight`, `stl`, `render`, `clean`, `doctor`, `gate-test`, `%.scad: ;`, `.DELETE_ON_ERROR`, placeholders, `%-12s` help.
-- [ ] 2.6 Apply-time: confirm BOSL2 at the pinned SHA builds `smoke` with no WARNING.
-- [ ] 2.7 Apply-time: confirm the EGL PNG render prints no WARNING (Docker mode).
-- [ ] 2.8 Apply-time: confirm the first line of `build/dep/stl/smoke.d` is `build/stl/smoke.stl:`.
-- [ ] 2.9 Create `docs/adr/0002-openscad-toolchain.md` (image tag+digest, BOSL2 SHA, gate, CI, camera, bump procedure); add index row in `docs/adr/README.md`.
-- [ ] 2.10 Edit `hardware/cad/README.md`: part convention (`[a-z0-9-]`, `main.scad`), outputs, gate.
-- [ ] 2.11 Edit `openspec/config.yaml`: OpenSCAD and GitHub Actions context; `verify.build_command: make stl render`, `verify.test_command: make gate-test`.
-- [ ] 2.12 Verify (no test runner; shell checks):
+- [x] 2.1 Apply-time: pick `dev.<date>` tag and its multi-arch index digest (`docker buildx imagetools inspect`); record it.
+- [x] 2.2 Apply-time: confirm the binary name/path in the image works with `--entrypoint openscad`.
+- [x] 2.3 Create `hardware/cad/smoke/main.scad` (SPDX header, BOSL2 include, `cuboid`).
+- [x] 2.4 Create `tools/cad/fixtures/warning.scad` (`cube(size = undefined_on_purpose);`).
+- [x] 2.5 Edit `Makefile`: variables, detection, `scad` macro, pattern rules, `preflight`, `stl`, `render`, `clean`, `doctor`, `gate-test`, `%.scad: ;`, `.DELETE_ON_ERROR`, placeholders, `%-12s` help.
+- [x] 2.6 Apply-time: confirm BOSL2 at the pinned SHA builds `smoke` with no WARNING.
+- [x] 2.7 Apply-time: confirm the EGL PNG render prints no WARNING (Docker mode).
+- [x] 2.8 Apply-time: confirm the first line of `build/dep/stl/smoke.d` is `build/stl/smoke.stl:`.
+- [x] 2.9 Create `docs/adr/0002-openscad-toolchain.md` (image tag+digest, BOSL2 SHA, gate, CI, camera, bump procedure); add index row in `docs/adr/README.md`.
+- [x] 2.10 Edit `hardware/cad/README.md`: part convention (`[a-z0-9-]`, `main.scad`), outputs, gate.
+- [x] 2.11 Edit `openspec/config.yaml`: OpenSCAD and GitHub Actions context; `verify.build_command: make stl render`, `verify.test_command: make gate-test`.
+- [x] 2.12 Verify (no test runner; shell checks):
   - `make help` lists `stl render clean doctor gate-test`.
   - `make clean && make stl render && test -s build/stl/smoke.stl && test -s build/png/smoke.png`.
-  - Second `make stl` prints "Nothing to be done"; `touch hardware/cad/smoke/main.scad` rebuilds.
+  - Second `make stl` is silent and runs no OpenSCAD (make prints no "Nothing to be done" because the phony `preflight` always runs); `touch hardware/cad/smoke/main.scad` rebuilds.
   - `rg -q '^build/stl/smoke.stl:' build/dep/stl/smoke.d`.
   - `make gate-test` prints `gate-test: OK`.
   - `git submodule deinit -f libs/BOSL2; make stl` fails with hint; then `git submodule update --init`.

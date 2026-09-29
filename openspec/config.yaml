@@ -6,6 +6,9 @@ context: |
   Planned stack: OpenSCAD (3D design), firmware, software, docs (none present yet)
   Architecture: not yet defined
   Testing: no runner, no CI, no linter/formatter detected
+  OpenSCAD: root Makefile (make stl render doctor gate-test), BOSL2 submodule at libs/BOSL2,
+    parts at hardware/cad/<part>/main.scad, toolchain pinned in docs/adr/0002-openscad-toolchain.md
+  CI: GitHub Actions (workflow arrives with the openscad-toolchain change, PR 3)
   Detected: 2026-09-29
 
 projects: []  # no project markers discovered yet; update as subprojects are added
@@ -43,8 +46,8 @@ rules:
     tdd: false
     test_command: ""
   verify:
-    test_command: ""
-    build_command: ""
+    test_command: "make gate-test"
+    build_command: "make stl render"
     coverage_threshold: 0
   archive:
     - Warn before merging destructive deltas
