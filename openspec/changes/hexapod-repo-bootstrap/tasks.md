@@ -49,6 +49,6 @@ For feature-branch-chain: PR 1 base = tracker branch; PR 2 base = PR 1 branch; P
 
 ## Phase 4: Verification
 
-- [ ] 4.1 `fd README.md` returns 13 files; `fd -t d -d 2` shows every spec'd directory.
-- [ ] 4.2 `rg "^License:" -g '*/README.md'` matches each domain and subdirectory README (`libs/` excepted).
-- [ ] 4.3 Re-run Phase 1 shell checks; `git status --short` shows no stray `.atl/` or generated files.
+- [x] 4.1 `fd README.md` returns 13 files; `fd -t d -d 2` shows every spec'd directory.
+- [x] 4.2 `rg "^License:" -g '*/README.md'` matches each domain and subdirectory README (`libs/` excepted).
+- [x] 4.3 Re-run Phase 1 shell checks; `git status --short` shows no stray `.atl/` or generated files.

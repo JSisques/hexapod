@@ -190,7 +190,7 @@ There is no test runner, so verification uses commands:
 | Check | Command | Expected |
 |---|---|---|
 | Help | `make`, `make help` | exit 0, lists 7 targets |
-| Placeholder | `make stl` | exit 1, message on stderr |
+| Placeholder | `make stl` | recipe exits 1 (make exits 2), message on stderr |
 | Ignored | `git check-ignore -v build/x hardware/cad/a.stl x.3mf render.png` | all matched |
 | Allowed | `git check-ignore docs/hero.png` | exit 1 (not ignored) |
 | Tree | `fd README.md` | 13 READMEs (12 subdirectories + root) |
