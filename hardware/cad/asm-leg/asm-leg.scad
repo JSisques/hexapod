@@ -15,8 +15,6 @@ asm_colors = [["coxa-servo", "dimgray"], ["coxa-bracket", "orange"], ["femur-ser
 
 as_cage_depth = servo_cage_depth(servo);
 
-// Femur servo frame (fixed in the bracket): shaft toward -Y, cage floor and idler boss toward +Y.
-module asm_femur_servo_frame() move([coxa_l, leg_lane_dy, cb_zmid]) xrot(90) children();
 // Femur link frame: the femur servo frame pitched by alpha about the femur axis.
 module asm_link_frame(alpha) move([coxa_l, leg_lane_dy, cb_zmid]) yrot(-alpha) xrot(90) children();
 // Tibia servo frame: knee axis parallel to the femur axis, beam rotated by the knee angle phi.
@@ -26,9 +24,9 @@ module asm_tibia_frame(alpha, phi) move([coxa_l, leg_lane_dy, cb_zmid]) yrot(-al
 module asm_body(name, alpha, phi) {
     if (name == "coxa-servo") move([0, 0, cb_case_top]) zrot(180) servo_model(servo);
     else if (name == "coxa-bracket") coxa_bracket();
-    else if (name == "femur-servo") asm_femur_servo_frame() servo_model(servo);
+    else if (name == "femur-servo") femur_servo_frame() servo_model(servo);
     else if (name == "femur-plate-a") asm_link_frame(alpha) move([0, 0, sv(servo, "top_h")]) xrot(180) femur_plate_a();
-    else if (name == "femur-plate-b") asm_link_frame(alpha) move([0, 0, -(as_cage_depth + idler_boss_h)]) femur_plate_b();
+    else if (name == "femur-plate-b") asm_link_frame(alpha) move([0, 0, -(as_cage_depth + idler_boss_h + leg_axial_gap)]) femur_plate_b();
     else if (name == "tibia-servo") asm_tibia_frame(alpha, phi) servo_model(servo);
     else if (name == "tibia") asm_tibia_frame(alpha, phi) tibia();
     else if (name == "foot") asm_tibia_frame(alpha, phi) move([-tibia_l - ft_floor, 0, tb_zax]) yrot(90) foot();

@@ -8,7 +8,7 @@ The leg parts collide in motion: the tibia hits the femur cage (about -4.7 mm at
 
 ### In Scope
 - Mesh bed gate in the `stl` recipe (awk over ASCII STL, `BED_MAX` parsed from `params.scad`, overridable). Removes the analytic `*_size()` functions and their asserts.
-- `make check-fit` (phony): per-pose `intersection()` over `fit_alpha` [-30,0,30] x `fit_phi` [-15,0,20,45] (previously [-30,0,20,45], narrowed after design), signed-volume test (tol 0.1 mm3), sentinel object, optional 0.2 mm axial gap. It runs as its own CI step after `gate-test` and is not a prerequisite of `make stl`.
+- `make check-fit` (phony): per-pose `intersection()` over `fit_alpha` [-30,0,30] x `fit_phi` [-15,0,20,45] (previously [-30,0,20,45], narrowed after design), signed-volume test (tol 2.0 mm3; previously 0.1 mm3), sentinel object, optional 0.2 mm axial gap. It runs as its own CI step after `gate-test` and is not a prerequisite of `make stl`.
 - Refactor `asm-leg` into pose-parameterised modules plus `fit.scad`.
 - `gate-test` gets an `expect_fail` macro and the `fit-interference` and `bed-oversize` fixtures.
 - Geometry: (a) delete the spacer bosses and M3 bolts; (c1) cut the femur `servo_pocket` from the whole bracket; (b) B1, femur servo body vertical in a redesigned coxa bracket; (c2) absorbed by B1.
@@ -49,7 +49,7 @@ Build the tooling first, then fix the geometry, with the fit check as the oracle
 |------|------------|------------|
 | Hand-derived numbers are unconfirmed | Med | The sweep is the oracle |
 | B1 still collides at alpha -30 with phi 45 | Med | B2 fallback, decided by evidence |
-| ASCII STL precision or `--export-format` not supported on the pinned image | Med | Probe in PR1; tolerance 0.1 mm3 |
+| ASCII STL precision or `--export-format` not supported on the pinned image | Med | Probe in PR1; tolerance 2.0 mm3 (previously 0.1 mm3) |
 | Flat plates lose out-of-plane stiffness | Med | Record it; validate physically |
 | MG996R profile is PROVISIONAL | High | The parts stay NOT safe to print until the servo is measured |
 

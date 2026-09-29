@@ -4,7 +4,7 @@ Mode: Standard (Strict TDD false). Store: openspec. Chain: feature-branch-chain.
 
 ## PR1: Mesh bed gate (tasks 1.1-1.12): COMPLETE, 12/12
 
-Remaining: PR2 verification (2.4 docker half, 2.9-2.14), PR3 (3.1-3.8), PR4 (4.1-4.13).
+Remaining: PR3 (3.7 CI, 3.8 PR body), PR4 (4.1-4.13).
 
 ## PR2: asm-leg refactor and check-fit (tasks 2.1-2.14): PARTIAL, authoring done (2.1-2.3, 2.5-2.8 marked [x]); verification not run
 
@@ -40,3 +40,35 @@ Not run: 2.4 docker half, 2.9 through 2.14 (gate-test 4 OK, contact noise, red b
 - 2.12: every export logs `Top level object is a 3D object (manifold)`, `Status: NoError`; `make -n stl` references no fit target; `build/stl` and `build/png` contain no fit files.
 - 2.13: `make check-fit` from clean takes 3 min 32 s on both local and Docker (12 poses, serial).
 - 2.14: `.github/workflows/cad.yml` is untouched in this PR.
+
+## PR3: Flat plates, pocket cut, plate A relief (tasks 3.1-3.8): 3.1-3.6 done, 3.7 local/Docker done (PR CI pending), 3.8 pending (PR body)
+
+Decision applied (user, after design): `fit_vol_tol = 2.0` mm3 (previously 0.1 mm3). Every statement of 0.1 mm3 in proposal, design, exploration, tasks, `specs/leg-design/spec.md` (requirement and scenario, with a "Previously" note) and the awk usage comment was updated. ADR-0004, Makefile, fixtures and README hold no 0.1 value. Fixture (100 mm3) still fails: `gate-test: fit OK`. A zero-overlap scene reports `fit: zero: 0.000 mm3, tolerance 2.0 mm3`, exit 0.
+
+Authored (uncommitted): `hardware/cad/common/params.scad` (`leg_axial_gap`, `leg_plate_d`, `leg_plate_a_t`, `fit_vol_tol`), `hardware/cad/leg-femur-plate/femur-plate.scad` (flat hulls, `leg_plate_a_relief()`), `hardware/cad/leg-coxa-bracket/coxa-bracket.scad` (`femur_servo_frame()`, femur pocket, c3 relief), `hardware/cad/asm-leg/asm-leg.scad` (`leg_axial_gap`, uses `femur_servo_frame()`), `tools/cad/stl-volume.awk` (comment). About 33 added / 29 removed lines outside openspec/.
+
+### Investigation: `coxa-bracket x femur-plate-a/b` (307-891 mm3)
+Not a pivot boss false positive. A scratch intersection at a0_p0 gave bbox x 23.5..62, y 19.2..44.3, z 10.6..35.6 for plate B and x 14.5..62, y -11.6..19.2 for plate A: the M3 spacer bosses (height `leg_joint_span / 2`, at femur_l/2, y +/-8) sitting inside the bracket cage. The idler boss only touches the plate B inner face and the M4 hole (4.4) is separate, so there is no boss-in-plate overlap. Deleting the spacers removed both pairs (a0_p0: 890.8 and 804.1 mm3 gone); no hole in the plate was needed. With the c3 relief disabled, `coxa-bracket x femur-plate-a` returns at 49.058 mm3 (a0_p0); with it, the pair is gone.
+
+### Work Unit Evidence (PR3)
+| Evidence | Value |
+|---|---|
+| Focused test command | `make gate-test` local and `TOOLCHAIN=docker`: `warnings OK`, `torque OK`, `bed OK`, `fit OK`, exit 0 |
+| Runtime harness | `make stl` local and Docker exit 0: plate STL 86.00x72.00x5.70, bracket 86.40x59.80x57.60, tibia 120.90x26.30x47.60, foot 16.20x16.20x26.00; `femur peak 8.66 / 8.8 kg.cm, margin 1.02` (unchanged). `make render` local: 0 WARNING/ERROR, 6 PNGs (Docker render not run). `make check-fit` local (3:21) and Docker (3:32, after `make clean`): red, exit 2, identical pair lists (diff empty). Zero-overlap: 0.000 mm3. |
+| Rollback boundary | `leg-femur-plate/`, `leg-coxa-bracket/` (frame, pocket, relief), `asm-leg.scad` gap, params entries |
+
+### check-fit after PR3 (pairs above 2.0 mm3, identical local and Docker)
+Gone: spacers, `femur-servo x coxa-bracket`, `femur-servo x femur-plate-a/b`, `coxa-bracket x femur-plate-a/b`. Remaining:
+- (c2) `coxa-servo x femur-plate-a` 17.709 mm3 in all 12 poses (fixed by `leg_lane_dy = -5` in PR4).
+- (b) `coxa-bracket x tibia`: a-30_p20 628.241, a-30_p45 2085.020, a0_p-15 400.578, a0_p20 540.628, a0_p45 1302.777, a30_p-15 397.271.
+- (b) `coxa-bracket x tibia-servo`: a-30_p20 52.811, a-30_p45 856.151, a0_p20 69.087, a0_p45 1274.280.
+- (b) `femur-servo x tibia`: a-30_p45 1980.390, a0_p45 370.086; `femur-servo x tibia-servo`: a-30_p45 248.928, a0_p45 40.716.
+- Below the tolerance and not listed: `tibia x foot` 0.501 (all poses) and small eps contacts. Poses are judged on the summed volume, so noise pairs add (a-30_p0 total 19.275 = 17.709 + 0.501 + 1.065).
+
+### PR body note (3.8)
+Flat plates lose out-of-plane stiffness (spacers and bolts removed; the servo cage and idler boss now set the plate spacing). Physical validation pending.
+
+### Deviations
+- `leg_plate_a_relief()` is defined in `femur-plate.scad` (per task) but is a cutter for the bracket, so `coxa-bracket.scad` now includes `femur-plate.scad`.
+- `femur_servo_frame()` is added to `coxa-bracket.scad` (design ownership) and `asm-leg.scad` uses it instead of its own `asm_femur_servo_frame`; frame includes `leg_lane_dy` (0 now).
+- Tolerance change 0.1 -> 2.0 mm3 (user decision).

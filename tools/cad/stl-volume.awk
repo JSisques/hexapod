@@ -2,7 +2,7 @@
 # Fit gate: signed volume of an ASCII STL. Facets with x < -500 are the sentinel (at least one must exist).
 # Group g = int((x1 + 500) / 1000): g = 0 is the scene; with -v pairs=<log>, g >= 1 is fit pair g - 1
 # (fit.scad offsets pair i by 1000 * (i + 1) mm in X) and names come from ECHO: "fit-pair", i, "a", "b".
-# Usage: LC_ALL=C awk -v tol=0.1 -v name=<pose> [-v pairs=<log>] -f tools/cad/stl-volume.awk <file.stl>
+# Usage: LC_ALL=C awk -v tol=2.0 -v name=<pose> [-v pairs=<log>] -f tools/cad/stl-volume.awk <file.stl>
 BEGIN {
     if (tol == "") { err = "FIT_VOL_TOL is not set (fit_vol_tol not found in params.scad)"; exit 1 }
     if (pairs != "")

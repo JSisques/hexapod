@@ -17,7 +17,7 @@ The work lands as tooling first and geometry second, and `make check-fit` is the
 | D3 | Export vs check | Pose STLs are cached make targets. `check-fit` re-runs awk on every invocation. | Checking inside the export recipe | Changing `FIT_VOL_TOL` would not re-check cached targets. The check is cheap. |
 | D4 | Pose convention | `alpha` = femur pitch (knee up > 0). `phi` = **knee joint angle**, measured from the femur-plate normal. At `alpha = 0` it equals the torque-model `phi`. | World-frame `phi` (tibia from vertical) | Interference depends only on joint angles, so the grid is the servo command envelope. World `phi` with `alpha -30, phi 45` means a knee angle of 75 deg, which no same-lane design can clear (section 3.5). |
 | D5 | Pair table | Generated: every distinct pair of the 8 bodies (28 pairs) | A hand-picked list | New bodies are checked automatically. The OpenSCAD geometry cache evaluates each body once per run. |
-| D6 | Contact allowance | `fit_vol_tol = 0.1` mm3, plus `leg_axial_gap = tol_fit` (0.2) between plate B and both idler bosses, in the assembly only | Zero tolerance; no gap | Plate B rotates against the bosses, so a running clearance (washer or loose nylock) is physically right, and it removes the noisy zero-thickness contact sliver. |
+| D6 | Contact allowance | `fit_vol_tol = 2.0` mm3 (previously 0.1 mm3; eps-level model contacts reach 0.3-1.1 mm3, the smallest real interference is 17.7 mm3), plus `leg_axial_gap = tol_fit` (0.2) between plate B and both idler bosses, in the assembly only | Zero tolerance; no gap | Plate B rotates against the bosses, so a running clearance (washer or loose nylock) is physically right, and it removes the noisy zero-thickness contact sliver. |
 | D7 | Awk location | `tools/cad/stl-bbox.awk` and `tools/cad/stl-volume.awk`, called by the Makefile | Inline awk in recipes | Readable, reviewable, and no `$$` escaping. The repo-structure delta permits them. |
 | D8 | (b) geometry | B1: femur servo spun -90 deg about its own shaft (body down), `leg_lane_dy = -5` | Body up (fails `alpha 30, phi 45`); tilted body (hits the coxa servo) | The only orientation that clears the envelope the coxa servo leaves (section 3.4) |
 | D9 | CI step timing | The `check-fit` CI step lands in **PR4** | Step in PR2 with `continue-on-error`; a branch condition | Every chained PR then shows an honest CI result for its own content, with no disguised allowlist. PR2 proves the checker through the `gate-test` fixture, which already runs in CI. |
@@ -139,7 +139,7 @@ END {
 # Fit gate: signed volume of an ASCII STL. Facets with x < -500 are the sentinel (at least one must exist).
 # Group g = int((x1 + 500) / 1000): g = 0 is the scene; with -v pairs=<log>, g >= 1 is fit pair g - 1
 # (fit.scad offsets pair i by 1000 * (i + 1) mm in X) and names come from ECHO: "fit-pair", i, "a", "b".
-# Usage: awk -v tol=0.1 -v name=<pose> [-v pairs=<log>] -f tools/cad/stl-volume.awk <file.stl>
+# Usage: awk -v tol=2.0 -v name=<pose> [-v pairs=<log>] -f tools/cad/stl-volume.awk <file.stl>
 BEGIN {
     if (tol == "") { err = "FIT_VOL_TOL is not set (fit_vol_tol not found in params.scad)"; exit 1 }
     if (pairs != "")
@@ -263,7 +263,7 @@ For reference, body up fails `(30, 45)`: the tibia end face lies inside the cage
 | Name | Value | PR |
 |---|---|---|
 | `fit_alpha`, `fit_phi` | `[-30, 0, 30]`, `[-15, 0, 20, 45]` (narrowed by user decision; previously `[-30, 0, 20, 45]`) | 2 |
-| `fit_vol_tol` | `0.1` (mm3) | 2 |
+| `fit_vol_tol` | `2.0` (mm3; previously `0.1`) | 2 |
 | `leg_lane_dy` | `0` in PR2, `-5` in PR4 | 2/4 |
 | `leg_axial_gap` | `tol_fit` (0.2) | 3 |
 | `leg_plate_d`, `leg_plate_a_t` | `horn_d + 2*wall`, `horn_t + tol_fit + wall` | 3 |
