@@ -2,12 +2,13 @@
 schema: spec-driven
 
 context: |
-  Project: hexapod (monorepo, early stage; repo scaffolding, OpenSCAD toolchain and CI in place, no real parts yet)
+  Project: hexapod (monorepo, early stage; repo scaffolding, OpenSCAD toolchain and CI in place, first leg module modelled, not printed)
   Planned stack: OpenSCAD (3D design), firmware, software, docs (none present yet)
   Architecture: not yet defined
   Testing: no unit-test runner; make gate-test proves the OpenSCAD warnings gate; CI builds STL/PNG on every PR
   OpenSCAD: root Makefile (make stl render doctor gate-test), BOSL2 submodule at libs/BOSL2,
     parts at hardware/cad/<part>/main.scad, toolchain pinned in docs/adr/0002-openscad-toolchain.md
+  Leg module foundation: common lib in hardware/cad/common, provisional MG996R profile, tier XS, torque gate in gate-test
   CI: GitHub Actions (.github/workflows/cad.yml)
   Detected: 2026-09-29
 

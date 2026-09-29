@@ -1,10 +1,6 @@
-# CAD Build Specification
+# Delta for CAD Build
 
-## Purpose
-
-Define the reproducible OpenSCAD build: entry points, make targets, toolchain selection, library path, warnings gate, and output layout.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Entry points and outputs
 
@@ -36,32 +32,6 @@ Only `hardware/cad/<part>/main.scad` files MUST be built; a directory without `m
 - WHEN `make stl render` runs
 - THEN no `build/stl/common.stl` or `build/png/common.png` is produced
 
-### Requirement: Toolchain selection
-
-The Makefile MUST use a local `openscad` binary when present, otherwise the Docker image pinned by dated tag. It SHOULD warn when the local binary lacks Manifold. It MUST pass `--backend` only when the binary supports it.
-
-#### Scenario: Docker fallback
-
-- GIVEN no `openscad` on PATH and Docker available
-- WHEN `make stl` runs
-- THEN the build runs in the pinned image
-
-#### Scenario: Old local binary
-
-- GIVEN a local OpenSCAD without `--backend`
-- WHEN `make stl` runs
-- THEN `--backend` is not passed and a version warning is printed
-
-### Requirement: Library path and submodule guard
-
-The Makefile MUST export `OPENSCADPATH=libs`. If `libs/BOSL2/std.scad` is missing, it MUST fail non-zero with a hint naming `git submodule update --init`.
-
-#### Scenario: Uninitialized submodule
-
-- GIVEN `libs/BOSL2` is empty
-- WHEN `make stl` runs
-- THEN it exits non-zero and the output contains the hint
-
 ### Requirement: Warnings gate
 
 Builds MUST pass `--hardwarnings` and MUST scan OpenSCAD stderr for `WARNING|ERROR`; any match MUST fail the build, locally and in CI. `make gate-test` MUST prove the gate fires by building the warning fixture `tools/cad/fixtures/warning.scad`, and MUST also prove the torque gate fires by building the fixture `tools/cad/fixtures/torque-infeasible.scad`: that build MUST fail and its output MUST contain the message `torque budget exceeded`.
@@ -79,22 +49,3 @@ Builds MUST pass `--hardwarnings` and MUST scan OpenSCAD stderr for `WARNING|ERR
 - WHEN `make gate-test` runs
 - THEN building the fixture exits non-zero and its output contains `torque budget exceeded`
 - AND `make gate-test` exits 0 only if both the warning fixture and the torque fixture fail as expected
-### Requirement: Dependency tracking
-
-Builds MUST emit `-d` dependency files so editing an included file rebuilds dependent outputs.
-
-#### Scenario: Included file changes
-
-- GIVEN a built part and an unchanged `main.scad`
-- WHEN an included file is touched and `make stl` runs
-- THEN the STL is rebuilt
-
-### Requirement: Clean
-
-`make clean` MUST remove `build/` and exit 0, including when it is absent.
-
-#### Scenario: Clean twice
-
-- GIVEN `build/` exists
-- WHEN `make clean` runs twice
-- THEN both runs exit 0 and `build/` is absent

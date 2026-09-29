@@ -2,13 +2,13 @@
 
 A six-legged walking robot (18 servos, 3 DOF per leg), designed as code: parametric 3D models in OpenSCAD, plus firmware, software and documentation, all in one repository.
 
-> Status: the OpenSCAD toolchain is in place (Makefile build, BOSL2, CI) with a smoke part. No real CAD parts, firmware or software yet.
+> Status: the OpenSCAD toolchain is in place (Makefile build, BOSL2, CI). The first leg module (tier XS, provisional MG996R profile, four printable parts and an assembly preview) is modelled but not yet printed. No firmware or software yet.
 
 ## Repository map
 
 | Path | Purpose |
 | --- | --- |
-| `hardware/cad/` | OpenSCAD parametric parts and assemblies |
+| `hardware/cad/` | OpenSCAD parametric parts and assemblies (leg module, see its [README](hardware/cad/README.md)) |
 | `hardware/electronics/` | Schematics and PCB |
 | `hardware/bom/` | Bill of materials |
 | `firmware/` | Microcontroller firmware |
@@ -58,3 +58,4 @@ The repository is split-licensed. Full texts live in [`LICENSES/`](LICENSES/).
 
 - [ADR-0001](docs/adr/0001-repository-layout-and-licensing.md): layout, STL policy and license split.
 - [ADR-0002](docs/adr/0002-openscad-toolchain.md): OpenSCAD toolchain, pinned image, BOSL2, warnings gate and CI.
+- [ADR-0003](docs/adr/0003-leg-servo-abstraction-and-tiers.md): servo profile abstraction, size tiers, torque gate and `asm-*` previews.
