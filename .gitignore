@@ -1,0 +1,23 @@
+# Build outputs
+/build/
+
+# Generated CAD / render artifacts (produced by make/CI, never committed)
+*.stl
+*.3mf
+*.amf
+*.off
+*.gcode
+*.png
+
+# Curated documentation images are allowed
+!/docs/**/*.png
+
+# Local tooling (skill registry cache)
+/.atl/
+
+# OS / editor noise
+.DS_Store
+*~
+*.swp
+.idea/
+.vscode/
