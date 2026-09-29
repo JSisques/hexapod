@@ -49,18 +49,18 @@ PR1 with ADR-0003 is ~420 (> 400), so ADR-0003 and its index row move to PR3 (de
 
 ## Phase 3: Assembly, Docs (PR 3)
 
-- [ ] 3.1 Create `hardware/cad/asm-leg/main.scad` (coloured torque-model pose, no bed assert).
-- [ ] 3.2 Apply-time check: colours survive in `build/png/asm-leg.png` with `--render`; monochrome is acceptable, record result.
-- [ ] 3.3 Create `docs/architecture/leg-torque-budget.md` (recompute margins from `params.scad`).
-- [ ] 3.4 Create `docs/adr/0003-leg-servo-abstraction-and-tiers.md` and add the row to `docs/adr/README.md`.
-- [ ] 3.5 Modify `hardware/cad/README.md` (conventions, PROVISIONAL, torque gate, materials) and `openspec/config.yaml` (context line).
+- [x] 3.1 Create `hardware/cad/asm-leg/main.scad` (coloured torque-model pose, no bed assert).
+- [x] 3.2 Apply-time check: colours survive in `build/png/asm-leg.png` with `--render`; monochrome is acceptable, record result.
+- [x] 3.3 Create `docs/architecture/leg-torque-budget.md` (recompute margins from `params.scad`).
+- [x] 3.4 Create `docs/adr/0003-leg-servo-abstraction-and-tiers.md` and add the row to `docs/adr/README.md`.
+- [x] 3.5 Modify `hardware/cad/README.md` (conventions, PROVISIONAL, torque gate, materials) and `openspec/config.yaml` (context line).
 
 ## Phase 4: Verification (each PR, cumulative)
 
-- [ ] 4.1 `make clean stl render`: exit 0, no `WARNING|ERROR`; `eza build/stl build/png` shows 4 leg STLs, no `asm-leg.stl`, `asm-leg.png` present (PR3). PR2 scope verified: 4 leg STLs, no asm-leg.stl; asm-leg.png pending PR3.
+- [x] 4.1 `make clean stl render`: exit 0, no `WARNING|ERROR`; `eza build/stl build/png` shows 4 leg STLs, no `asm-leg.stl`, `asm-leg.png` present (PR3). Verified in PR 2 (4 leg STLs, no asm-leg.stl) and PR 3 (asm-leg.png present, no asm-leg.stl; local and docker).
 - [x] 4.2 `make gate-test` prints both `OK` lines.
 - [x] 4.3 Infeasible proof: `OPENSCADPATH=libs openscad --hardwarnings -D 'leg_tier="M"' -o $SCRATCH/x.stl hardware/cad/leg-tibia/main.scad` fails with `torque budget exceeded`.
 - [x] 4.4 `rg PROVISIONAL build/log/stl/leg-tibia.log` matches; missing-key scratch test asserts `key not found`.
 - [x] 4.5 `touch hardware/cad/common/params.scad && make stl` rebuilds leg STLs.
-- [x] 4.6 `make help` lists asm-* PNG-only text; `git check-ignore build` succeeds. (PR 1 scope verified)
+- [x] 4.6 `make help` lists asm-* PNG-only text; `git check-ignore build` succeeds. (verified in PR 1 and re-verified in PR 3)
 - [ ] 4.7 Push each PR and confirm the CI run is green (gate-test, stl, render artifacts).
