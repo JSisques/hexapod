@@ -43,7 +43,7 @@ For feature-branch-chain: PR 1 base = tracker branch; PR 2 base = PR 1 branch; P
 
 ## Phase 3: Licensing and root README (PR 2, PR 3)
 
-- [ ] 3.1 (PR 2) Create `LICENSES/CC-BY-SA-4.0.txt` with verbatim legalcode from creativecommons.org.
+- [x] 3.1 (PR 2) Create `LICENSES/CC-BY-SA-4.0.txt` with verbatim legalcode from creativecommons.org.
 - [ ] 3.2 (PR 3) Create `LICENSES/MIT.txt` with "Copyright (c) 2026 Javier Plaza Sisqués". Confirm no root `LICENSE` exists.
 - [ ] 3.3 (PR 3) Rewrite `README.md`: pitch, repo map, license table (docs/hardware CC-BY-SA-4.0; tools/firmware/software MIT; libs upstream), `make help` quick start, ADR link.
 
