@@ -63,7 +63,8 @@ bed_max = 180;
 fit_alpha   = [-30, 0, 30];
 fit_phi     = [-15, 0, 20, 45];
 fit_vol_tol = 2.0;
-leg_lane_dy = 0;   // femur lane offset along the femur axis (mm)
+leg_lane_dy = -5;  // femur lane offset along the femur axis (mm); clears the coxa servo ear (c2)
+cb_femur_spin = -90;   // femur servo spin about its shaft: body points down (B1)
 
 // Femur plates: flat two-disc hull, no spacers. The gap separates plate B from the idler boss in the assembly only.
 leg_axial_gap = tol_fit;

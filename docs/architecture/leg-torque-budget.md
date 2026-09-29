@@ -72,6 +72,10 @@ The profile uses the TowerPro datasheet value (11.0 kg.cm at 6 V), not the retai
 - Contingency, not applied: `femur_l` 55 to 50 mm gives `m_total = 2.086 kg`, femur peak 8.07 kg.cm and margin 1.09. It is not applied because femur 55 mm is a confirmed product decision.
 - `phi = 45` deg (stress pose): femur static 7.82 kg.cm, which exceeds 7.80 even at 13 kg.cm (femur peak 11.74). This is why 45 deg stays an echo, not an assert.
 
+## Geometry and the torque model
+
+Geometry does not enter the torque model: the gate reads only the tier lengths, `n_servo`, `link_g_per_mm` and `m_body_kg`. The interference fix (flat femur plates, femur servo body pointing down in the coxa bracket, `leg_lane_dy = -5`) leaves them untouched, so the femur peak margin stays 1.02 (`8.66 / 8.8 kg.cm`). The real mass per leg changes by about -5 to -10 g (the plate spacers and two M3 bolts go; the taller bracket web adds about 2 g), which the model ignores. Only the weighing in the calibration plan below captures it.
+
 ## Calibration plan
 
 1. Weigh every printed part and the complete leg; replace `link_g_per_mm` and `m_body_kg`.
