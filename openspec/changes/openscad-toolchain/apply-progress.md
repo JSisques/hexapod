@@ -23,3 +23,12 @@
 Deviations: image tag (above); no "Nothing to be done" message (preflight always runs); gate macro removes output on failure; internal `TC` variable.
 
 Not committed (per instructions). Remaining: PR 3 (3.1-3.4).
+
+## PR 3 (branch feat/openscad-toolchain-3-ci): tasks 3.1-3.3 done, 3.4 pending
+
+- 3.1 SHAs (lightweight tags, commit objects): actions/checkout v7.0.1 = 3d3c42e5aac5ba805825da76410c181273ba90b1; actions/upload-artifact v7.0.1 = 043fb46d1a93c77aae656e7c1c64a875d1fc6a0a.
+- 3.2 `.github/workflows/cad.yml` created; `actionlint` and `yaml.safe_load` pass. Checkout uses `submodules: recursive`.
+- 3.3 README: status, `--recurse-submodules` clone, prerequisites, `make stl render doctor`, ADR-0002 link, placeholders are firmware/software/docs only; repo map and license table consistent.
+- 3.4 NOT done: needs the PR CI run after the PR is opened.
+
+Not committed (per instructions).
