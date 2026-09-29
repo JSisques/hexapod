@@ -40,7 +40,8 @@ BACKEND_FLAG = $(if $(HAS_BACKEND),--backend=$(BACKEND))
 
 SRCS := $(wildcard hardware/cad/*/main.scad)
 PARTS := $(patsubst hardware/cad/%/main.scad,%,$(SRCS))
-STLS := $(PARTS:%=build/stl/%.stl)
+STL_PARTS := $(filter-out asm-%,$(PARTS))
+STLS := $(STL_PARTS:%=build/stl/%.stl)
 PNGS := $(PARTS:%=build/png/%.png)
 
 NOT_IMPLEMENTED = @echo "make $@: not implemented yet (see docs/adr/0001-repository-layout-and-licensing.md)" >&2; exit 1
@@ -55,7 +56,7 @@ scad = mkdir -p $(@D) build/dep/$(4) build/log/$(4); log=build/log/$(4)/$*.log; 
 help: ## List available targets
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-stl: $(STLS) ## Export STL models to build/stl
+stl: $(STLS) ## Export STL models to build/stl (asm-* parts are PNG-only)
 render: $(PNGS) ## Render PNG previews to build/png
 
 build/stl/%.stl: hardware/cad/%/main.scad | preflight ; @$(call scad,$@,$<,,stl)
@@ -90,11 +91,14 @@ endif
 	@echo "BOSL2:      $$(git submodule status libs/BOSL2 2>&1)"
 	@if command -v docker >/dev/null 2>&1; then echo "docker:     available"; else echo "docker:     not found"; fi
 
-gate-test: ## Prove the warnings gate fails on the warning fixture
-	@rm -f build/gate/warning.stl; \
+gate-test: ## Prove the warnings and torque gates fail on their fixtures
+	@rm -f build/gate/warning.stl build/gate/torque-infeasible.stl; \
 	out=$$($(MAKE) build/gate/warning.stl 2>&1); st=$$?; \
 	if [ $$st -ne 0 ] && printf '%s\n' "$$out" | grep -q WARNING; then echo "gate-test: OK"; \
-	else printf '%s\n' "$$out" >&2; echo "gate-test: FAILED (gate did not fire)" >&2; exit 1; fi
+	else printf '%s\n' "$$out" >&2; echo "gate-test: FAILED (gate did not fire)" >&2; exit 1; fi; \
+	out=$$($(MAKE) build/gate/torque-infeasible.stl 2>&1); st=$$?; \
+	if [ $$st -ne 0 ] && printf '%s\n' "$$out" | grep -q 'torque budget exceeded'; then echo "gate-test: torque OK"; \
+	else printf '%s\n' "$$out" >&2; echo "gate-test: FAILED (torque gate did not fire)" >&2; exit 1; fi
 
 firmware: ## Build firmware (placeholder)
 	$(NOT_IMPLEMENTED)
