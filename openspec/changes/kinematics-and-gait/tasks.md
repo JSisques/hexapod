@@ -84,7 +84,7 @@ Base boundary (if feature-branch-chain): PR 1 base = tracker branch; PR N base =
 
 ## PR 7: Visualiser, report, artifact (specs: software-tooling, ci)
 
-- [ ] 7.1 RED: `software/tests/test_viz.py` (Agg, non-empty PNG, PROVISIONAL marked) and `test_report.py` (limit margins, torque rows, alpha != 0 caveat, PROVISIONAL banner, torque warning exit 0, CLI exit codes).
-- [ ] 7.2 Create `software/src/hexapod/{viz,report,__main__}.py`.
-- [ ] 7.3 Add `software-report` target to `Makefile`; upload PNG and report in `software.yml` (retention 14 days).
-- [ ] 7.4 Final `make software gate-test check-params`; update `software/README.md`.
+- [x] 7.1 RED: `software/tests/test_viz.py` (Agg, non-empty PNG, PROVISIONAL marked) and `test_report.py` (limit margins, torque rows, alpha != 0 caveat, PROVISIONAL banner, torque warning exit 0, CLI exit codes).
+- [x] 7.2 Create `software/src/hexapod/{viz,report,__main__}.py`.
+- [x] 7.3 Add `software-report` target to `Makefile`; upload PNG and report in `software.yml` (retention 14 days).
+- [x] 7.4 Final `make software gate-test check-params`; update `software/README.md`.

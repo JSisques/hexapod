@@ -186,6 +186,10 @@ software: $(SW_VENV)/.installed ## Lint, type-check and test the Python package 
 	cd software && .venv/bin/mypy
 	cd software && .venv/bin/pytest
 
+software-report: $(SW_VENV)/.installed ## Write the gait plots and pose report to build/software
+	$(SW_BIN)/python -m hexapod plot --out build/software
+	$(SW_BIN)/python -m hexapod report --out build/software
+
 firmware: ## Build firmware (placeholder)
 	$(NOT_IMPLEMENTED)
 docs: ## Build documentation (placeholder)

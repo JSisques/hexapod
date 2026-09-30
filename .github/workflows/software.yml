@@ -25,3 +25,14 @@ jobs:
           python-version: "3.12"
       - name: Quality gate
         run: make software
+      - name: Pose report and plots
+        run: make software-report
+      - name: Upload report and plots
+        uses: actions/upload-artifact@v7
+        with:
+          name: software-report
+          path: |
+            build/software/*.png
+            build/software/report.md
+          retention-days: 14
+          if-no-files-found: error
