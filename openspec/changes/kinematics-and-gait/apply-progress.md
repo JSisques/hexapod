@@ -69,3 +69,36 @@ Branch `feat/kinematics-2-params-bridge` (stacked on `feat/kinematics-1-scaffold
 - Snapshot `provisional` is a list of names (`["servo"]`) per the params-bridge spec, plus `servo.provisional` bool; `Params.provisional` is their OR (BodyLayout joins the OR in PR 4). Design text said "servo flag".
 - Local OpenSCAD 2026.09.29 and the pinned image (2026.01.19) produce a byte-identical snapshot; the committed file comes from the Docker image. OpenSCAD echo prints 6 significant digits.
 - Size: ~490 authored lines (over the 400 budget; generated 150-line JSON excluded). Loader with typed validation is the largest part (186 lines); recommend `size:exception` for this PR.
+
+## PR 3: Leg kinematics - COMPLETE (6/6)
+
+Branch `feat/kinematics-3-leg-kinematics` (stacked on `feat/kinematics-2b-params-loader`).
+
+- [x] 3.1 RED `software/tests/test_leg.py` (35 tests: 12 golden FK, 12 grid round-trips, zero pose, offset, theta round-trip and wrap, 3 unreachable reasons)
+- [x] 3.2 RED `software/tests/test_limits.py` (7 tests, incl. servo inclusion naming the joint)
+- [x] 3.3 RED placeholder feasibility (in `test_limits.py`)
+- [x] 3.4 `software/src/hexapod/leg.py` (`fk`, `ik`, `JointAngles`, `Reason`, `UnreachableError`), `limits.py`
+- [x] 3.5 `docs/adr/0006-leg-frames-and-joint-conventions.md` and index row
+- [x] 3.6 Refactor; `rg` shows no CAD literals in `leg.py`/`limits.py` (only the PROVISIONAL `THETA_LIMIT = 45`)
+
+### TDD Cycle Evidence (PR 3)
+
+| Task | RED | GREEN | Triangulation | REFACTOR |
+|------|-----|-------|---------------|----------|
+| 3.1-3.4 | `pytest software/tests`: 2 collection errors (`hexapod.leg`/`hexapod.limits` missing) | `make software PYTHON=python3`: 64 passed | 12 CAD poses, 5 theta values, wrap 190 -> -170, 3 reasons | Split long line (E501); mypy `approx` comparison fixed in test |
+| 3.5 | N/A (docs) | ADR indexed | N/A | None |
+
+### Work Unit Evidence (PR 3)
+
+| Evidence | Value |
+|---|---|
+| Focused test | `make software PYTHON=python3`: ruff pass, format pass, mypy strict 9 files no issues, pytest 64 passed |
+| Runtime harness | N/A (pure maths) |
+| Rollback boundary | Revert PR 3: `leg.py`, `limits.py`, `test_leg.py`, `test_limits.py`, ADR-0006 + index row |
+
+### Deviations / Notes (PR 3)
+
+- Design `servo_range_ok(lim, range_deg) -> bool` became `servo_range_failures(...) -> list[Violation]` so the failure names the joint (spec); empty list means OK.
+- Actual neutral IK for (100, -1.3, -52): theta 0, alpha 9.876 deg, phi 0.721 deg.
+- No `docs/architecture` page added (not required by tasks; ADR-0006 holds the conventions).
+- Size: ~245 authored lines (ADR 36, src 109, tests 99, index 1), within budget.
