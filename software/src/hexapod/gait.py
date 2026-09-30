@@ -14,6 +14,7 @@ from hexapod.body import BodyLayout, leg_reports, neutral_feet
 from hexapod.leg import FloatArray, JointAngles
 from hexapod.limits import JointLimits
 from hexapod.params import Params
+from hexapod.stability import margin
 
 
 @dataclass(frozen=True)
@@ -29,6 +30,8 @@ class GaitSpec:
 
 
 TRIPOD = GaitSpec("tripod", 0.5, (0.0, 0.5, 0.0, 0.5, 0.0, 0.5))
+WAVE = GaitSpec("wave", 5 / 6, (5 / 6, 4 / 6, 3 / 6, 0.0, 1 / 6, 2 / 6))
+RIPPLE = GaitSpec("ripple", 2 / 3, (2 / 3, 1 / 3, 0.0, 1 / 2, 5 / 6, 1 / 6))
 
 
 @dataclass(frozen=True)
@@ -45,6 +48,12 @@ class Frame:
     feet: FloatArray  # (6, 3) world foot contact points
     q: tuple[JointAngles | None, ...]  # None for an unreachable leg
     violations: list[LegViolation]
+    margin: float  # static stability margin in mm; -inf when unsupported
+
+    @property
+    def supported(self) -> bool:
+        """False when fewer than three non-collinear feet are grounded."""
+        return math.isfinite(self.margin)
 
 
 def _foot_offset(spec: GaitSpec, s_leg: float) -> tuple[float, float, bool]:
@@ -76,7 +85,8 @@ def frame_at(
         if not r.reachable:
             found.append(LegViolation(k, "unreachable", math.inf))
         found.extend(LegViolation(k, v.joint, v.amount) for v in r.violations)
-    return Frame(s, tuple(stance), feet, tuple(r.q for r in reports), found)
+    support_xy = feet[[k for k, g in enumerate(stance) if g], :2]
+    return Frame(s, tuple(stance), feet, tuple(r.q for r in reports), found, margin(support_xy))
 
 
 def run(spec: GaitSpec, layout: BodyLayout, params: Params, samples: int = 120) -> list[Frame]:

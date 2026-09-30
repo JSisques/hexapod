@@ -161,3 +161,31 @@ Branch `feat/kinematics-5-gait-engine` (stacked on `feat/kinematics-4-body-kinem
 - `Frame` has no `margin` yet (added with stability in PR 6); `Frame.q` holds `JointAngles | None`, violations are `LegViolation(leg, joint, amount)` with phase in `Frame.s`; unreachable legs use joint "unreachable", amount inf.
 - `run` builds `JointLimits` from `params.limits` (signature per design). `frame_at` is exposed for single-phase evaluation.
 - Size: 167 authored lines (src 85, tests 82), well within 400.
+
+## PR 6: Wave, ripple, stability - COMPLETE (3/3)
+
+Branch `feat/kinematics-6-gaits-stability` (stacked on `feat/kinematics-5-gait-engine`, PR #24).
+
+- [x] 6.1 RED `software/tests/test_stability.py` (7 tests: triangle inradius, square and off-centre, outside negative, duplicate/interior points, < 3 feet, collinear/coincident, supported triple)
+- [x] 6.2 RED `software/tests/test_gait_all.py` (12 tests: parameter sets, wave one-at-a-time order, ripple two swinging, min grounded 3/5/4 over 600 samples, margin > 0 and no violations, unsupported frame flagged, stride 30 / lift 10 feasible, neutral IK alpha ~9.9 / phi ~0.7)
+- [x] 6.3 `software/src/hexapod/stability.py` (`convex_hull`, `margin`, `is_supported`); `WAVE`, `RIPPLE` in `gait.py`; `Frame.margin` and `Frame.supported`
+
+### TDD Cycle Evidence (PR 6)
+
+| Task | RED | GREEN | Triangulation | REFACTOR |
+|------|-----|-------|---------------|----------|
+| 6.1-6.3 | tests written before `hexapod.stability`, `WAVE`, `RIPPLE`, `Frame.margin` existed (imports fail) | `make software PYTHON=python3`: 104 passed | 3 gaits, hull shapes, degenerate inputs | Renamed shadowing local (mypy); wave order expectation corrected to the design offsets |
+
+### Work Unit Evidence (PR 6)
+
+| Evidence | Value |
+|---|---|
+| Focused test | `make software PYTHON=python3`: ruff pass, format pass, mypy strict pass, pytest 104 passed |
+| Measured (stride 30, lift 10, stance 60, 120 samples) | min margin: tripod 76.958 mm, wave 82.277 mm, ripple 80.317 mm; min phi: tripod -12.754, wave -12.733, ripple -12.750 deg (limit -15); no violations |
+| Rollback boundary | Revert PR 6: `stability.py`, the two test files, WAVE/RIPPLE/margin edits in `gait.py` |
+
+### Deviations / Notes (PR 6)
+
+- Margin is the hull-edge distance from the body origin (xy of the world feet, body fixed at xy 0). `-inf` means unsupported (< 3 distinct or all collinear feet); `Frame.supported` is `isfinite(margin)`.
+- Wave swing order from the design offsets is LF, LM, LR, RF, RM, RR (front to rear per side), not a strict rotational order.
+- Size: ~192 authored lines (src 52 + 12, tests 128), within budget.

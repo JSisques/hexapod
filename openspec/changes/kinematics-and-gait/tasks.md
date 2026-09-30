@@ -78,9 +78,9 @@ Base boundary (if feature-branch-chain): PR 1 base = tracker branch; PR N base =
 
 ## PR 6: Wave, ripple, stability (specs: gait-engine)
 
-- [ ] 6.1 RED: `software/tests/test_stability.py`: hull margin on triangle and square; negative with < 3 feet; unsupported flag.
-- [ ] 6.2 RED: `software/tests/test_gait_all.py`: support counts (tripod 3, wave 5, ripple 4); margin > 0 and no violations; re-assert stride 30 / lift 10 feasible and neutral IK alpha ~9.9, phi ~0.7.
-- [ ] 6.3 Create `software/src/hexapod/stability.py`; add `WAVE`, `RIPPLE` to `gait.py`; wire margin into `Frame`.
+- [x] 6.1 RED: `software/tests/test_stability.py`: hull margin on triangle and square; negative with < 3 feet; unsupported flag.
+- [x] 6.2 RED: `software/tests/test_gait_all.py`: support counts (tripod 3, wave 5, ripple 4); margin > 0 and no violations; re-assert stride 30 / lift 10 feasible and neutral IK alpha ~9.9, phi ~0.7.
+- [x] 6.3 Create `software/src/hexapod/stability.py`; add `WAVE`, `RIPPLE` to `gait.py`; wire margin into `Frame`.
 
 ## PR 7: Visualiser, report, artifact (specs: software-tooling, ci)
 
