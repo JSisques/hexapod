@@ -67,8 +67,8 @@ Base boundary (if feature-branch-chain): PR 1 base = tracker branch; PR N base =
 
 ## PR 4: Body kinematics (specs: body-kinematics)
 
-- [ ] 4.1 RED: `software/tests/test_body.py`: six mount points at 80 mm / 30+60k; identity gives identical targets (100 mm reach, 60 mm below coxa); X translation and yaw round-trips; PROVISIONAL flag; infeasible leg flagged, others independent.
-- [ ] 4.2 Create `software/src/hexapod/body.py` (`BodyLayout`, `BodyPose`, `neutral_feet`, `leg_targets`, per-leg reachability).
+- [x] 4.1 RED: `software/tests/test_body.py`: six mount points at 80 mm / 30+60k; identity gives identical targets (100 mm reach, 60 mm below coxa); X translation and yaw round-trips; PROVISIONAL flag; infeasible leg flagged, others independent.
+- [x] 4.2 Create `software/src/hexapod/body.py` (`BodyLayout`, `BodyPose`, `neutral_feet`, `leg_targets`, per-leg reachability).
 
 ## PR 5: Gait engine and tripod (specs: gait-engine)
 
