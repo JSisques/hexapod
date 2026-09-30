@@ -11,11 +11,11 @@ Strict TDD: each PR writes RED tests first, then GREEN, then refactor. Defaults 
 | Chained PRs recommended | Yes |
 | Suggested split | PR 1 → 2 → 3 → 4 → 5 → 6 → 7 |
 | Delivery strategy | ask-on-risk |
-| Chain strategy | pending (design proposes feature-branch-chain) |
+| Chain strategy | feature-branch-chain |
 
 Decision needed before apply: Yes
 Chained PRs recommended: Yes
-Chain strategy: pending
+Chain strategy: feature-branch-chain
 400-line budget risk: High
 
 ### Suggested Work Units
@@ -72,7 +72,7 @@ Base boundary (if feature-branch-chain): PR 1 base = tracker branch; PR N base =
 
 ## PR 5: Gait engine and tripod (specs: gait-engine)
 
-- [x] 5.1 RED: `software/tests/test_gait.py`: periodicity phase 0 vs 1; stance foot fixed; continuous path; tripod >= 3 stance feet; no violations at defaults; stride 40 / lift 15 yields violations as data.
+- [x] 5.1 RED: `software/tests/test_gait.py`: periodicity phase 0 vs 1; stance foot moves backwards at constant speed in the body frame; continuous path; tripod >= 3 stance feet; no violations at defaults; stride 40 / lift 15 yields violations as data.
 - [x] 5.2 Create `software/src/hexapod/gait.py` (`GaitSpec`, `run`, `Frame`, `TRIPOD`; defaults step_length 30, step_height 10).
 - [x] 5.3 Re-assert stride 30 / lift 10 stays within limits for all six legs.
 

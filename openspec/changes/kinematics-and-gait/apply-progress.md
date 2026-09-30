@@ -220,3 +220,14 @@ Branch `feat/kinematics-7-viz-report` (stacked on `feat/kinematics-6-gaits-stabi
 - Torque rows are evaluated at the largest phi over the gait cycle with alpha = 0 (as the CAD gate does); alpha != 0 caveat is `KNOWN_ISSUE` in every report. Tripod result: femur peak 7.71 / 8.80 kg.cm, no warning. Warnings print as `WARNING: torque budget exceeded` lines and never affect the exit status.
 - CLI: `python -m hexapod report|plot --out DIR [--params FILE]`; exit 1 if the snapshot fails to load, 2 for bad usage.
 - Size: ~366 authored lines (src 225, tests 108, Makefile 4, workflow 11, README 18), within 400.
+
+## Remediation pass (verify-report FAIL, branch `feat/kinematics-8-verify-fixes`)
+
+- C1: gait-engine scenario "Stance foot fixed" reworded to the body-frame truth (constant-speed backward motion along the heading at ground height, equivalent to a world-fixed foot while the body advances); test renamed to `test_stance_foot_moves_backwards_at_constant_speed_in_body_frame`, assertions unchanged. design.md and ADR-0006 had no world-fixed claim.
+- W2: `test_cli_report_with_torque_warning_still_exits_zero` drives `main(["report", "--params", weak.json])` with `k_dyn = 20` and asserts exit 0 plus the WARNING line. No RED is meaningful: the behaviour already existed and the test guards it.
+- W4: ADR-0005 item 4 now says the bridge ships in this change.
+- W5: design.md back-ported (`provisional` name list plus servo bool, `servo_range_failures`, `body.is_provisional(params, layout)`, yaw limit in `limits.THETA_LIMIT`); Open Questions ticked; tasks.md chain strategy set to feature-branch-chain.
+- W6: `openspec/config.yaml` `verify.test_command` is `make software gate-test check-params`.
+- S3: `indent_style = space` added to `[*.py]`. S4: repo-structure delta says "params exporter sources".
+- S5: PR 2 was split into 2a (branch `feat/kinematics-2-params-bridge`: exporter, converter, snapshot, drift gate) and 2b (branch `feat/kinematics-2b-params-loader`, stacked on 2a: typed loader in `params.py`). Combined it was ~490 authored lines (over the 400 budget; generated 150-line JSON excluded; the loader alone was 186), hence the split; `size:exception` was recommended and should be recorded on the PR.
+- Not addressed: W1, W3 (need the CI run of PR #26), W7, S1, S2, S6 (out of scope).

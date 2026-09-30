@@ -47,7 +47,7 @@ rules:
     tdd: true
     test_command: "make software"
   verify:
-    test_command: "make software gate-test"
+    test_command: "make software gate-test check-params"
     build_command: "make stl render"
     coverage_threshold: 0
   archive:

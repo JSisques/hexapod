@@ -27,7 +27,7 @@ Every directory in the skeleton MUST contain a `README.md` stating its purpose, 
 
 ### Requirement: Deferred scope excluded
 
-The change MUST NOT add firmware source code, body designs, or electronics designs. Python source, tests and configuration under `software/`, the committed parameter snapshot and the params exporter source are permitted. A BOSL2 submodule (`.gitmodules`), the smoke part `hardware/cad/smoke/main.scad`, the warnings-gate fixture `tools/cad/fixtures/warning.scad`, the torque-gate fixture `tools/cad/fixtures/torque-infeasible.scad`, the fit-gate fixture `tools/cad/fixtures/fit-interference.scad`, the bed-gate fixture `tools/cad/fixtures/bed-oversize.scad`, any awk script under `tools/cad/`, `.github/workflows`, the shared helper directory `hardware/cad/common/` (including `params.scad`), and the leg part directories under `hardware/cad/` (`leg-*`, `asm-leg`) are permitted. `firmware/` MUST remain a stub.
+The change MUST NOT add firmware source code, body designs, or electronics designs. Python source, tests and configuration under `software/`, the committed parameter snapshot and the params exporter sources are permitted. A BOSL2 submodule (`.gitmodules`), the smoke part `hardware/cad/smoke/main.scad`, the warnings-gate fixture `tools/cad/fixtures/warning.scad`, the torque-gate fixture `tools/cad/fixtures/torque-infeasible.scad`, the fit-gate fixture `tools/cad/fixtures/fit-interference.scad`, the bed-gate fixture `tools/cad/fixtures/bed-oversize.scad`, any awk script under `tools/cad/`, `.github/workflows`, the shared helper directory `hardware/cad/common/` (including `params.scad`), and the leg part directories under `hardware/cad/` (`leg-*`, `asm-leg`) are permitted. `firmware/` MUST remain a stub.
 (Previously: `software/` also had to remain a stub and software source code was excluded; no snapshot or exporter was permitted.)
 
 #### Scenario: No deferred artifacts
@@ -54,4 +54,4 @@ The change MUST NOT add firmware source code, body designs, or electronics desig
 - GIVEN the tree after the change
 - WHEN listing `tools/cad/`
 - THEN fixtures are limited to `warning`, `torque-infeasible`, `fit-interference` and `bed-oversize`
-- AND any other file is an awk script or the params exporter source
+- AND any other file is an awk script or the params exporter sources

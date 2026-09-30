@@ -1,4 +1,6 @@
+import json
 from dataclasses import replace
+from importlib import resources
 from pathlib import Path
 
 import pytest
@@ -68,3 +70,13 @@ def test_cli_bad_usage_and_missing_params(tmp_path: Path) -> None:
         main(["frobnicate"])
     assert exc.value.code == 2
     assert main(["report", "--out", str(tmp_path), "--params", str(tmp_path / "nope.json")]) == 1
+
+
+def test_cli_report_with_torque_warning_still_exits_zero(tmp_path: Path) -> None:
+    text = resources.files("hexapod").joinpath("data/leg-params.json").read_text("utf-8")
+    snapshot = json.loads(text)
+    snapshot["torque"]["k_dyn"] = 20.0
+    weak = tmp_path / "weak.json"
+    weak.write_text(json.dumps(snapshot))
+    assert main(["report", "--out", str(tmp_path), "--params", str(weak)]) == 0
+    assert "WARNING: torque budget exceeded" in (tmp_path / "report.md").read_text()

@@ -70,9 +70,9 @@ Frames ─> stability.margin, limits.violations ─> report.md + viz PNGs (build
 
 ## Snapshot Schema (v1)
 
-Top-level keys (sorted): `schema_version: 1`, `generator` (`tools/cad/export-params.scad`), `license` (`CC-BY-SA-4.0`), `provisional` (servo flag), `leg` {`tier`, `coxa_l`, `femur_l`, `tibia_l`, `leg_lane_dy`, `cb_zmid`, `tb_zax`, `ft_r`, `ft_floor`, `knee_to_foot`, `foot_dy`}, `limits` {`fit_alpha`, `fit_phi`}, `servo` {`name`, `provisional`, `range_deg`, `pulse_us`, `mass_kg`, `stall_kgcm`, `v_nom`}, `torque` {`supply_v`, `n_servo`, `link_g_per_mm`, `m_body_kg`, `k_dyn`, `derate_static`, `derate_peak`}, `fk_golden` [[alpha, phi, x, y, z] x 12].
+Top-level keys (sorted): `schema_version: 1`, `generator` (`tools/cad/export-params.scad`), `license` (`CC-BY-SA-4.0`), `provisional` (list of provisional names, currently `["servo"]`; the servo also carries its own `provisional` bool), `leg` {`tier`, `coxa_l`, `femur_l`, `tibia_l`, `leg_lane_dy`, `cb_zmid`, `tb_zax`, `ft_r`, `ft_floor`, `knee_to_foot`, `foot_dy`}, `limits` {`fit_alpha`, `fit_phi`}, `servo` {`name`, `provisional`, `range_deg`, `pulse_us`, `mass_kg`, `stall_kgcm`, `v_nom`}, `torque` {`supply_v`, `n_servo`, `link_g_per_mm`, `m_body_kg`, `k_dyn`, `derate_static`, `derate_peak`}, `fk_golden` [[alpha, phi, x, y, z] x 12].
 
-The loader requires `schema_version == 1` and every key listed above, and ignores unknown keys. Removing, renaming or changing the meaning of a key bumps the version. `Params.provisional` is the OR of the servo flag and `BodyLayout.provisional`. Every report and plot title shows `PROVISIONAL` while it is true.
+The loader requires `schema_version == 1` and every key listed above, and ignores unknown keys. Removing, renaming or changing the meaning of a key bumps the version. Provisional status is the OR of the servo flag and the layout flag, computed by `body.is_provisional(params, layout)` (`Params` has no layout). Every report and plot title shows `PROVISIONAL` while it is true.
 
 ## Interfaces (package `hexapod`, `software/src/hexapod/`)
 
@@ -85,8 +85,8 @@ def fk(q: JointAngles, g: LegGeometry) -> FloatArray             # shape (3,), f
 def ik(p: ArrayLike, g: LegGeometry) -> JointAngles              # raises UnreachableError(reason)
 # limits.py
 @dataclass(frozen=True) class JointLimits: ...; def violations(self, q) -> list[Violation]
-def servo_range_ok(lim: JointLimits, range_deg: float) -> bool
-# body.py   BodyLayout(mount_radius=80, mount_angles=30+60k, stance_height=60, reach=100, theta_limit=45, provisional=True)
+def servo_range_failures(lim: JointLimits, range_deg: float) -> list[Violation]
+# body.py   BodyLayout(mount_radius=80, mount_angles=30+60k, stance_height=60, reach=100, provisional=True)   # yaw limit: limits.THETA_LIMIT = 45
 @dataclass(frozen=True) class BodyPose: x, y, z, roll, pitch, yaw   # R = Rz(yaw) Ry(pitch) Rx(roll)
 def neutral_feet(layout, g) -> FloatArray                        # (6,3) world contact points
 def leg_targets(pose, feet_world, layout, g) -> FloatArray       # (6,3) leg-frame foot centres
@@ -166,5 +166,5 @@ No migration required. PRs merge in order 1 to 7 (a feature-branch chain). Rollb
 
 ## Open Questions
 
-- [ ] Accept the default stride 30 / lift 10 (or raise the stance height to 70 mm) given the `phi_min` headroom finding.
-- [ ] Confirm pip + venv (not uv) and `mypy --strict`. These were left open in the exploration and not covered by the confirmed decisions.
+- [x] Accept the default stride 30 / lift 10 (or raise the stance height to 70 mm) given the `phi_min` headroom finding.
+- [x] Confirm pip + venv (not uv) and `mypy --strict`. These were left open in the exploration and not covered by the confirmed decisions.

@@ -24,8 +24,9 @@ def test_periodicity_phase_0_equals_phase_1() -> None:
     assert np.allclose(a.feet, b.feet)
 
 
-def test_stance_foot_is_fixed_relative_to_ground() -> None:
-    # The body is fixed in the world here, so a stance foot moves backwards at constant speed.
+def test_stance_foot_moves_backwards_at_constant_speed_in_body_frame() -> None:
+    # Body frame: a stance foot moves backwards at constant speed at ground height, which
+    # keeps it fixed in the world while the body advances.
     a, b, c = (frame_at(TRIPOD, s, L, P) for s in (0.05, 0.15, 0.25))
     for leg in (0, 2, 4):  # stance for s in [0, 0.5)
         assert a.stance[leg] and b.stance[leg] and c.stance[leg]
