@@ -102,3 +102,32 @@ Branch `feat/kinematics-3-leg-kinematics` (stacked on `feat/kinematics-2b-params
 - Actual neutral IK for (100, -1.3, -52): theta 0, alpha 9.876 deg, phi 0.721 deg.
 - No `docs/architecture` page added (not required by tasks; ADR-0006 holds the conventions).
 - Size: ~245 authored lines (ADR 36, src 109, tests 99, index 1), within budget.
+
+## PR 4: Body kinematics - COMPLETE (2/2)
+
+Branch `feat/kinematics-4-body-kinematics` (stacked on `feat/kinematics-3-leg-kinematics`, PR #22).
+
+- [x] 4.1 RED `software/tests/test_body.py` (12 tests: mount points, identity targets, X translation, yaw round-trip, pitch/roll, six legs reach neutral via IK within limits, infeasible leg independent, limit violations reported, unsupported stance error, provisional OR)
+- [x] 4.2 `software/src/hexapod/body.py` (`BodyLayout`, `BodyPose`, `mount_points`, `neutral_feet`, `leg_targets`, `leg_reports`/`LegReport`, `verify_stance`/`UnsupportedStanceError`, `is_provisional`)
+
+### TDD Cycle Evidence (PR 4)
+
+| Task | RED | GREEN | Triangulation | REFACTOR |
+|------|-----|-------|---------------|----------|
+| 4.1/4.2 | `pytest software/tests/test_body.py`: collection error `ModuleNotFoundError: hexapod.body` | `make software PYTHON=python3`: 76 passed | 6 mounts, 6 legs at neutral, translation and yaw per leg frame, pitch/roll, unreachable vs limit-violating legs | mypy `no-any-return` fixed with a typed local; limit-violation test lowers the body 30 mm (a +15 mm guess was still feasible) |
+
+### Work Unit Evidence (PR 4)
+
+| Evidence | Value |
+|---|---|
+| Focused test | `make software PYTHON=python3`: ruff pass, format pass, mypy strict 11 files no issues, pytest 76 passed (12 in test_body.py) |
+| Runtime harness | N/A (pure maths) |
+| Rollback boundary | Revert PR 4: `software/src/hexapod/body.py`, `software/tests/test_body.py` |
+
+### Deviations / Notes (PR 4)
+
+- Neutral foot is at (reach, foot_dy) in each leg frame so the target equals the design's (100, -1.3, -52) and IK gives theta 0. "100 mm reach" is the x coordinate.
+- `Params` is unchanged (frozen, no layout): the provisional OR is exposed as `body.is_provisional(params, layout)`; reports must call it.
+- `BodyPose` defaults to zeros; use `layout.neutral_pose()` (z = stance height) as the identity pose.
+- `verify_stance` raises `UnsupportedStanceError` naming the first failing leg (unreachable or limit violation).
+- Size: ~246 authored lines (src 135, tests 111), within the 400 budget.
