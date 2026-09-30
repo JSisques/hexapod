@@ -8,6 +8,8 @@ OPENSCAD_IMAGE ?= openscad/openscad:dev.2026-01-19@sha256:0af06bc2aa7a45d18b01a2
 TOOLCHAIN ?= auto
 BACKEND ?= manifold
 IMGSIZE ?= 1024,768
+# Interpreter used to create software/.venv (Python 3.12 or newer).
+PYTHON ?= python3.12
 
 # Local binary: PATH first, then the macOS app bundle. Skipped when OPENSCAD is already set.
 ifeq ($(origin OPENSCAD),undefined)
@@ -145,9 +147,23 @@ check-fit: $(FIT_STLS) ## Check the leg assembly for interference over the fit p
 	if [ -n "$$fail" ]; then echo "error: check-fit: interference in poses:$$fail" >&2; exit 1; fi; \
 	echo "check-fit: OK ($(words $(FIT_POSES)) poses, tolerance $(FIT_VOL_TOL) mm3)"
 
+SW_VENV := software/.venv
+SW_BIN  := $(SW_VENV)/bin
+
+# The venv is rebuilt only when pyproject.toml changes (pins live there).
+$(SW_VENV)/.installed: software/pyproject.toml
+	$(PYTHON) -m venv $(SW_VENV)
+	$(SW_BIN)/pip install --quiet --upgrade pip
+	$(SW_BIN)/pip install --quiet -e 'software[dev]'
+	@touch $@
+
+software: $(SW_VENV)/.installed ## Lint, type-check and test the Python package (ruff, mypy --strict, pytest)
+	$(SW_BIN)/ruff check software
+	$(SW_BIN)/ruff format --check software
+	cd software && .venv/bin/mypy
+	cd software && .venv/bin/pytest
+
 firmware: ## Build firmware (placeholder)
-	$(NOT_IMPLEMENTED)
-software: ## Build software (placeholder)
 	$(NOT_IMPLEMENTED)
 docs: ## Build documentation (placeholder)
 	$(NOT_IMPLEMENTED)

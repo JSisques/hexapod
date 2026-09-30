@@ -3,31 +3,31 @@ schema: spec-driven
 
 context: |
   Project: hexapod (monorepo, early stage; repo scaffolding, OpenSCAD toolchain and CI in place, first leg module modelled, not printed)
-  Planned stack: OpenSCAD (3D design), firmware, software, docs (none present yet)
+  Planned stack: OpenSCAD (3D design), firmware, software (Python, software/), docs
   Architecture: not yet defined
-  Testing: no unit-test runner; make gate-test proves the OpenSCAD warnings gate; CI builds STL/PNG on every PR
+  Testing: software/ uses pytest, ruff and mypy --strict via make software (strict TDD); make gate-test proves the OpenSCAD gates; CI builds STL/PNG on every PR
   OpenSCAD: root Makefile (make stl render doctor gate-test), BOSL2 submodule at libs/BOSL2,
     parts at hardware/cad/<part>/main.scad, toolchain pinned in docs/adr/0002-openscad-toolchain.md
   Leg module foundation: common lib in hardware/cad/common, provisional MG996R profile, tier XS, torque gate in gate-test
-  CI: GitHub Actions (.github/workflows/cad.yml)
+  CI: GitHub Actions (.github/workflows/cad.yml, .github/workflows/software.yml)
   Detected: 2026-09-29
 
 projects: []  # no project markers discovered yet; update as subprojects are added
 
-strict_tdd: false  # zero projects discovered and no workspace-level test command
+strict_tdd: true
 
 testing:
-  strict_tdd: false
-  reason: "No projects discovered and no explicit workspace-level test command."
-  runner: none
+  strict_tdd: true
+  reason: "software/ is a Python project with a pytest suite; tests are written first."
+  runner: pytest
   layers:
-    unit: false
+    unit: true
     integration: false
     e2e: false
   coverage: false
-  linter: none
-  type_checker: none
-  formatter: none
+  linter: ruff
+  type_checker: mypy
+  formatter: ruff
 
 rules:
   proposal:
@@ -44,10 +44,10 @@ rules:
   apply:
     guidelines:
       - Follow existing code patterns
-    tdd: false
-    test_command: ""
+    tdd: true
+    test_command: "make software"
   verify:
-    test_command: "make gate-test"
+    test_command: "make software gate-test"
     build_command: "make stl render"
     coverage_threshold: 0
   archive:

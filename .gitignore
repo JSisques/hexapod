@@ -12,6 +12,14 @@
 # Curated documentation images are allowed
 !/docs/**/*.png
 
+# Python environments and caches (the committed params snapshot is JSON and not ignored)
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
 # Local tooling (skill registry cache)
 /.atl/
 
