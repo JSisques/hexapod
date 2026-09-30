@@ -58,12 +58,12 @@ Base boundary (if feature-branch-chain): PR 1 base = tracker branch; PR N base =
 
 ## PR 3: Leg kinematics (specs: leg-kinematics)
 
-- [ ] 3.1 RED: `software/tests/test_leg.py`: FK equals `fk_golden` (1e-3 mm); IK(FK(q)) within 1e-6 deg on the 12-pose grid; zero pose; -1.3 mm offset; unreachable reasons; theta wrap.
-- [ ] 3.2 RED: `software/tests/test_limits.py`: within limits (30/45/0), phi=60 gives 15 deg violation, servo inclusion failure names the joint.
-- [ ] 3.3 RED: placeholder feasibility re-assert: target (100, -1.3, -52) gives theta 0, alpha ~9.9 deg, phi ~0.7 deg, inside limits.
-- [ ] 3.4 Create `software/src/hexapod/leg.py` (fk, ik, `JointAngles`, `UnreachableError`) and `limits.py`.
-- [ ] 3.5 Write `docs/adr/0006-leg-frames-and-joint-conventions.md`; index it.
-- [ ] 3.6 Refactor; no CAD literals in `src` (grep check).
+- [x] 3.1 RED: `software/tests/test_leg.py`: FK equals `fk_golden` (1e-3 mm); IK(FK(q)) within 1e-6 deg on the 12-pose grid; zero pose; -1.3 mm offset; unreachable reasons; theta wrap.
+- [x] 3.2 RED: `software/tests/test_limits.py`: within limits (30/45/0), phi=60 gives 15 deg violation, servo inclusion failure names the joint.
+- [x] 3.3 RED: placeholder feasibility re-assert: target (100, -1.3, -52) gives theta 0, alpha ~9.9 deg, phi ~0.7 deg, inside limits.
+- [x] 3.4 Create `software/src/hexapod/leg.py` (fk, ik, `JointAngles`, `UnreachableError`) and `limits.py`.
+- [x] 3.5 Write `docs/adr/0006-leg-frames-and-joint-conventions.md`; index it.
+- [x] 3.6 Refactor; no CAD literals in `src` (grep check).
 
 ## PR 4: Body kinematics (specs: body-kinematics)
 
