@@ -20,7 +20,8 @@ The engine MUST take a gait parameter set (per-leg phase offset, duty factor, st
 
 - GIVEN a leg in stance
 - WHEN phase advances within stance
-- THEN its world foot position is unchanged
+- THEN in the body frame its foot moves backwards along the heading at constant speed and stays at ground height
+- AND this is equivalent to a foot fixed in the world while the body advances
 
 ### Requirement: Gait definitions
 
