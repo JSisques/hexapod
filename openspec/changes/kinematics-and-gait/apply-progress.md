@@ -189,3 +189,34 @@ Branch `feat/kinematics-6-gaits-stability` (stacked on `feat/kinematics-5-gait-e
 - Margin is the hull-edge distance from the body origin (xy of the world feet, body fixed at xy 0). `-inf` means unsupported (< 3 distinct or all collinear feet); `Frame.supported` is `isfinite(margin)`.
 - Wave swing order from the design offsets is LF, LM, LR, RF, RM, RR (front to rear per side), not a strict rotational order.
 - Size: ~192 authored lines (src 52 + 12, tests 128), within budget.
+
+## PR 7: Visualiser, report, artifact - COMPLETE (4/4)
+
+Branch `feat/kinematics-7-viz-report` (stacked on `feat/kinematics-6-gaits-stability`, PR #25). Last PR of the chain.
+
+- [x] 7.1 RED `software/tests/test_viz.py` (5 tests: PNG magic and size for tripod/wave/ripple, PROVISIONAL title on and off) and `test_report.py` (6 tests: CAD torque formula, report contents, stride 40 / lift 15 violation as data, torque warning informational, CLI exit 0, exit 2 usage and 1 missing params)
+- [x] 7.2 `software/src/hexapod/{viz,report,__main__}.py` (`render_gait`, `provisional_title`, `build_report`, `torque_rows`, `KNOWN_ISSUE`, `main`)
+- [x] 7.3 `make software-report`; `software.yml` steps "Pose report and plots" and upload of PNGs + `report.md` (artifact `software-report`, `retention-days: 14`)
+- [x] 7.4 README section; final `make software gate-test check-params` green
+
+### TDD Cycle Evidence (PR 7)
+
+| Task | RED | GREEN | Triangulation | REFACTOR |
+|------|-----|-------|---------------|----------|
+| 7.1/7.2 | `pytest tests/test_viz.py tests/test_report.py`: 2 collection errors, `ModuleNotFoundError: No module named 'hexapod.viz'` and `'hexapod.__main__'` | 115 passed | 3 gaits rendered, provisional on/off, torque ok and forced-fail (k_dyn 20), exit codes 0/1/2 | Torque worst case switched from max abs phi to max phi (abs gave a negative tibia torque); E501 wraps |
+| 7.3/7.4 | N/A (make, CI, docs) | `make software-report` writes 3 PNG + report.md | N/A | Aligned upload-artifact to `@v7` like cad.yml |
+
+### Work Unit Evidence (PR 7)
+
+| Evidence | Value |
+|---|---|
+| Focused test | `make software PYTHON=python3`: ruff, format, mypy strict (21 files), 115 passed |
+| Runtime harness | `make software-report PYTHON=python3` (1.97 s) wrote tripod/wave/ripple.png and report.md; `make gate-test check-params`: all 5 gates OK, check-params OK (12 s); combined `make software gate-test check-params PYTHON=python3` 17.2 s |
+| Rollback boundary | Revert PR 7: `viz.py`, `report.py`, `__main__.py`, the two test files, Makefile `software-report`, `software.yml` report/upload steps, README report section |
+
+### Deviations / Notes (PR 7)
+
+- Plots use the Agg canvas directly (`FigureCanvasAgg` on `Figure`), no pyplot, so no global backend switch.
+- Torque rows are evaluated at the largest phi over the gait cycle with alpha = 0 (as the CAD gate does); alpha != 0 caveat is `KNOWN_ISSUE` in every report. Tripod result: femur peak 7.71 / 8.80 kg.cm, no warning. Warnings print as `WARNING: torque budget exceeded` lines and never affect the exit status.
+- CLI: `python -m hexapod report|plot --out DIR [--params FILE]`; exit 1 if the snapshot fails to load, 2 for bad usage.
+- Size: ~366 authored lines (src 225, tests 108, Makefile 4, workflow 11, README 18), within 400.
