@@ -131,3 +131,33 @@ Branch `feat/kinematics-4-body-kinematics` (stacked on `feat/kinematics-3-leg-ki
 - `BodyPose` defaults to zeros; use `layout.neutral_pose()` (z = stance height) as the identity pose.
 - `verify_stance` raises `UnsupportedStanceError` naming the first failing leg (unreachable or limit violation).
 - Size: ~246 authored lines (src 135, tests 111), within the 400 budget.
+
+## PR 5: Gait engine and tripod - COMPLETE (3/3)
+
+Branch `feat/kinematics-5-gait-engine` (stacked on `feat/kinematics-4-body-kinematics`, PR #23).
+
+- [x] 5.1 RED `software/tests/test_gait.py` (9 tests: tripod structure, periodicity, stance foot, continuity, lift, >= 3 grounded, heading, defaults in limits, stride 40 / lift 15 reported)
+- [x] 5.2 `software/src/hexapod/gait.py` (`GaitSpec`, `TRIPOD`, `Frame`, `LegViolation`, `frame_at`, `run`)
+- [x] 5.3 Defaults (stride 30, lift 10, stance 60) stay within limits for all six legs over 120 samples
+
+### TDD Cycle Evidence (PR 5)
+
+| Task | RED | GREEN | Triangulation | REFACTOR |
+|------|-----|-------|---------------|----------|
+| 5.1/5.2 | `pytest tests/test_gait.py`: collection error `ModuleNotFoundError: hexapod.gait` | `make software PYTHON=python3`: 85 passed | tripod both half-cycles, phase 0 vs 1, 1200-sample continuity, heading 90 deg, defaults vs stride 40/lift 15 | Heading test expectation corrected (stance start is +L/2 along heading) |
+| 5.3 | covered by 5.1 default-limits test | same run | min phi asserted | None |
+
+### Work Unit Evidence (PR 5)
+
+| Evidence | Value |
+|---|---|
+| Focused test | `make software PYTHON=python3`: ruff pass, format pass, mypy strict no issues, pytest 85 passed (9 in test_gait.py) |
+| Runtime harness | N/A (pure maths) |
+| Rollback boundary | Revert PR 5: `software/src/hexapod/gait.py`, `software/tests/test_gait.py` |
+
+### Deviations / Notes (PR 5)
+
+- Measured: min phi over the default tripod cycle = -12.754 deg (limit -15); no violations. Stride 40 / lift 15: min phi -17.886 deg, 80 violations, all `phi`, legs 0, 2, 3, 5 (front/rear), max excess 2.886 deg.
+- `Frame` has no `margin` yet (added with stability in PR 6); `Frame.q` holds `JointAngles | None`, violations are `LegViolation(leg, joint, amount)` with phase in `Frame.s`; unreachable legs use joint "unreachable", amount inf.
+- `run` builds `JointLimits` from `params.limits` (signature per design). `frame_at` is exposed for single-phase evaluation.
+- Size: 167 authored lines (src 85, tests 82), well within 400.

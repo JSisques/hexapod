@@ -72,9 +72,9 @@ Base boundary (if feature-branch-chain): PR 1 base = tracker branch; PR N base =
 
 ## PR 5: Gait engine and tripod (specs: gait-engine)
 
-- [ ] 5.1 RED: `software/tests/test_gait.py`: periodicity phase 0 vs 1; stance foot fixed; continuous path; tripod >= 3 stance feet; no violations at defaults; stride 40 / lift 15 yields violations as data.
-- [ ] 5.2 Create `software/src/hexapod/gait.py` (`GaitSpec`, `run`, `Frame`, `TRIPOD`; defaults step_length 30, step_height 10).
-- [ ] 5.3 Re-assert stride 30 / lift 10 stays within limits for all six legs.
+- [x] 5.1 RED: `software/tests/test_gait.py`: periodicity phase 0 vs 1; stance foot fixed; continuous path; tripod >= 3 stance feet; no violations at defaults; stride 40 / lift 15 yields violations as data.
+- [x] 5.2 Create `software/src/hexapod/gait.py` (`GaitSpec`, `run`, `Frame`, `TRIPOD`; defaults step_length 30, step_height 10).
+- [x] 5.3 Re-assert stride 30 / lift 10 stays within limits for all six legs.
 
 ## PR 6: Wave, ripple, stability (specs: gait-engine)
 
