@@ -30,6 +30,8 @@ jobs:
         run: make gate-test
       - name: Fit check
         run: make check-fit
+      - name: Params drift
+        run: make check-params
       - name: Build STL and PNG
         run: make stl render
       - uses: actions/upload-artifact@v7

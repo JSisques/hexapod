@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help stl render firmware software docs clean doctor gate-test check-fit preflight
+.PHONY: help stl render firmware software docs clean doctor gate-test check-fit check-params params preflight
 .DELETE_ON_ERROR:
 .SUFFIXES:
 
@@ -8,6 +8,11 @@ OPENSCAD_IMAGE ?= openscad/openscad:dev.2026-01-19@sha256:0af06bc2aa7a45d18b01a2
 TOOLCHAIN ?= auto
 BACKEND ?= manifold
 IMGSIZE ?= 1024,768
+# Interpreter for tools/cad/echo-to-json.py (standard library only).
+PY3 ?= python3
+# Extra OpenSCAD flags for the params exporter; gate-test uses -D overrides to force drift.
+PARAMS_DEFS ?=
+PARAMS_SNAPSHOT := software/src/hexapod/data/leg-params.json
 # Interpreter used to create software/.venv (Python 3.12 or newer).
 PYTHON ?= python3.12
 
@@ -98,6 +103,8 @@ build/gate/%.stl: tools/cad/fixtures/%.scad tools/cad/stl-bbox.awk | preflight ;
 build/gate-fit/%.stl: tools/cad/fixtures/%.scad tools/cad/stl-volume.awk | preflight ; @$(call scad,$@,$<,$(STL_FMT),gate-fit); $(FIT_VOL) -v name='$*' $@
 build/fit/%.stl: $(FIT_SRC) | preflight ; @$(call scad,$@,$<,$(STL_FMT) $(call fit_defs,$*),fit)
 build/fit-diag/%.stl: $(FIT_SRC) | preflight ; @$(call scad,$@,$<,$(STL_FMT) $(call fit_defs,$*) -D fit_diag=true,fit-diag)
+build/params/%.echo: tools/cad/%.scad | preflight ; @$(call scad,$@,$<,$(PARAMS_DEFS),params)
+build/params/leg-params.json: build/params/export-params.echo tools/cad/echo-to-json.py ; $(PY3) tools/cad/echo-to-json.py $< > $@
 
 # Deleted includes listed in stale .d files must not break the build.
 %.scad: ;
@@ -130,11 +137,14 @@ endif
 	@echo "BOSL2:      $$(git submodule status libs/BOSL2 2>&1)"
 	@if command -v docker >/dev/null 2>&1; then echo "docker:     available"; else echo "docker:     not found"; fi
 
-gate-test: ## Prove the warnings, torque, bed and fit gates fail on their fixtures
+gate-test: ## Prove the warnings, torque, bed, fit and params-drift gates fail on their fixtures
 	@$(call expect_fail,build/gate/warning.stl,WARNING,warnings)
 	@$(call expect_fail,build/gate/torque-infeasible.stl,torque budget exceeded,torque)
 	@$(call expect_fail,build/gate/bed-oversize.stl,exceeds bed_max,bed)
 	@$(call expect_fail,build/gate-fit/fit-interference.stl,interference volume,fit)
+	@out=$$($(MAKE) --no-print-directory check-params PARAMS_DEFS='-D k_dyn=1.6' 2>&1); st=$$?; \
+	  if [ $$st -ne 0 ] && printf '%s\n' "$$out" | grep -q 'params snapshot drift'; then echo "gate-test: params drift OK"; \
+	  else printf '%s\n' "$$out" >&2; echo "gate-test: FAILED (params drift gate did not fire)" >&2; exit 1; fi
 
 check-fit: $(FIT_STLS) ## Check the leg assembly for interference over the fit pose grid
 	@[ -n "$(FIT_POSES)" ] || { echo "error: check-fit: fit_alpha/fit_phi not found in $(PARAMS)" >&2; exit 1; }
@@ -146,6 +156,19 @@ check-fit: $(FIT_STLS) ## Check the leg assembly for interference over the fit p
 	done; \
 	if [ -n "$$fail" ]; then echo "error: check-fit: interference in poses:$$fail" >&2; exit 1; fi; \
 	echo "check-fit: OK ($(words $(FIT_POSES)) poses, tolerance $(FIT_VOL_TOL) mm3)"
+
+# The snapshot is regenerated from scratch each time so a stale build/params never hides drift.
+params: ## Regenerate the committed params snapshot from the CAD sources
+	@rm -rf build/params
+	@$(MAKE) --no-print-directory build/params/leg-params.json
+	cp build/params/leg-params.json $(PARAMS_SNAPSHOT)
+	@echo "params: wrote $(PARAMS_SNAPSHOT)"
+
+check-params: ## Fail when the committed params snapshot differs from the CAD sources
+	@rm -rf build/params
+	@$(MAKE) --no-print-directory build/params/leg-params.json
+	@diff -u $(PARAMS_SNAPSHOT) build/params/leg-params.json || { echo "error: params snapshot drift in $(PARAMS_SNAPSHOT); run: make params" >&2; exit 1; }
+	@echo "check-params: OK ($(PARAMS_SNAPSHOT))"
 
 SW_VENV := software/.venv
 SW_BIN  := $(SW_VENV)/bin
