@@ -45,14 +45,16 @@ Base boundary (if feature-branch-chain): PR 1 base = tracker branch; PR N base =
 
 ## PR 2: Params bridge (specs: params-bridge, ci)
 
-- [ ] 2.1 RED: `software/tests/test_echo_to_json.py` (0 or 2 echo lines, `undef`/`nan`/`inf`, duplicate key, deterministic bytes).
+> Split for the 400-line budget: PR 2a (`feat/kinematics-2-params-bridge`) = 2.1, 2.3, 2.4, 2.5, 2.7, 2.8 and the JSON snapshot part of 2.6; PR 2b (`feat/kinematics-2b-params-loader`) = 2.2 and `params.py` from 2.6.
+
+- [x] 2.1 RED: `software/tests/test_echo_to_json.py` (0 or 2 echo lines, `undef`/`nan`/`inf`, duplicate key, deterministic bytes).
 - [ ] 2.2 RED: `software/tests/test_params.py` (valid load, schema_version, missing key `fit_phi`, unknown key ignored, provisional OR, non-numeric, missing file).
-- [ ] 2.3 Create `tools/cad/echo-to-json.py` (stdlib).
-- [ ] 2.4 Create `tools/cad/export-params.scad` (params echo + 12 `fk_golden` poses).
-- [ ] 2.5 Add `make params` and `make check-params` (`diff -u`, "params snapshot drift").
+- [x] 2.3 Create `tools/cad/echo-to-json.py` (stdlib).
+- [x] 2.4 Create `tools/cad/export-params.scad` (params echo + 12 `fk_golden` poses).
+- [x] 2.5 Add `make params` and `make check-params` (`diff -u`, "params snapshot drift").
 - [ ] 2.6 Generate `software/src/hexapod/data/leg-params.json`; create `software/src/hexapod/params.py`.
-- [ ] 2.7 Extend `gate-test` in `Makefile` with a `-D` override proving `check-params` fails (gate-test proof that drift fires).
-- [ ] 2.8 Add drift step after `check-fit` in `.github/workflows/cad.yml`.
+- [x] 2.7 Extend `gate-test` in `Makefile` with a `-D` override proving `check-params` fails (gate-test proof that drift fires).
+- [x] 2.8 Add drift step after `check-fit` in `.github/workflows/cad.yml`.
 
 ## PR 3: Leg kinematics (specs: leg-kinematics)
 
